@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "functions": {
+    "api/ai-search.js": {
+      "memory": 256,
+      "maxDuration": 30
+    }
+  }
+}
