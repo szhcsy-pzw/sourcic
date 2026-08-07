@@ -15,7 +15,7 @@
   <details class="panel mb16" style="border:1px solid var(--line);border-radius:12px">
     <summary style="padding:12px 16px;cursor:pointer;font-weight:600">⚙️ 高级设置（可选）</summary>
     <div class="panel-bd" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <label class="col">后端 API 地址<input id="be_api" placeholder="https://sourcic-n2dw15tqf-szhcsy-pzws-projects.vercel.app" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px"></label>
+      <label class="col">后端 API 地址<input id="be_api" placeholder="https://sourcic-bvun43eim-szhcsy-pzws-projects.vercel.app" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px"></label>
       <label class="col">自备 LLM 接口地址（可选）<input id="ai_ep" placeholder="留空则用后端代理" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px"></label>
       <label class="col">自备模型名<input id="ai_model" placeholder="deepseek-chat" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px"></label>
       <label class="col">自备 API Key（仅存本地）<input id="ai_key" type="password" placeholder="sk-..." style="padding:8px 10px;border:1px solid var(--line);border-radius:8px"></label>
@@ -182,7 +182,7 @@ function applyFilters(f){
 }
 
 // ---- 后端 AI 代理（首选：无需访客配置 Key） ----
-const VERCEL_API = 'https://sourcic-n2dw15tqf-szhcsy-pzws-projects.vercel.app';
+const VERCEL_API = 'https://sourcic-bvun43eim-szhcsy-pzws-projects.vercel.app';
 async function backendAI(text){
   const base = localStorage.getItem('be_api') || VERCEL_API;
   const url = base + '/api/ai-search';
