@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>买家中心 · 芯汇通 SourcIC</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+
+<div class="wrap mt16">
+  <div class="console">
+    <aside class="cmenu">
+      <div style="padding:12px;border-bottom:1px solid var(--line-2);margin-bottom:6px">
+        <div class="row center gap8">
+          <div style="width:34px;height:34px;border-radius:6px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">杭</div>
+          <div><div class="bold" style="font-size:12.5px">杭州智联智能科技</div><div class="tiny muted">采购方 · 已认证</div></div>
+        </div>
+        <div class="mt12 tiny muted">授信额度 <b style="color:var(--ok)">¥300,000</b> · 已用 ¥86,400</div>
+        <div class="progress mt8"><i style="width:29%;background:var(--ok)"></i></div>
+      </div>
+      <h6>采购</h6>
+      <a href="javascript:;" data-p="rfq" class="on" onclick="go(this)">📢 我的求购 <span class="tag tag-org" style="margin-left:auto">3</span></a>
+      <a href="javascript:;" data-p="quote" onclick="go(this)">💬 收到的报价 <span class="tag tag-red" style="margin-left:auto">8</span></a>
+      <a href="javascript:;" data-p="bom" onclick="go(this)">📄 BOM 配单</a>
+      <h6>订单</h6>
+      <a href="javascript:;" data-p="order" onclick="go(this)">📋 我的订单</a>
+      <a href="javascript:;" data-p="dispute" onclick="go(this)">⚖️ 争议与售后</a>
+      <h6>账户</h6>
+      <a href="javascript:;" data-p="credit" onclick="go(this)">💳 支付与授信</a>
+      <a href="javascript:;" data-p="cert" onclick="go(this)">🏢 企业资料</a>
+    </aside>
+
+    <main class="col gap16">
+
+      <!-- 我的求购 -->
+      <section id="p-rfq">
+        <div class="panel mb16">
+          <div class="panel-hd"><h3>发布求购单（RFQ）</h3><span class="small muted">找不到现货？让 3,417 家卖家来找你</span></div>
+          <div class="panel-bd">
+            <div class="alert alert-info mb16">💡 求购单发布后 <b>平均 22 分钟</b>收到首个报价，平均 4.3 家卖家应答。停产料、紧缺料建议优先走求购。</div>
+            <div class="grid3">
+              <div class="field"><label>器件型号 <span class="req">*</span></label><input placeholder="STM32F103C8T6"></div>
+              <div class="field"><label>品牌（可留空）</label><select id="bSel"></select></div>
+              <div class="field"><label>需求数量 <span class="req">*</span></label><input type="number" placeholder="5000"></div>
+            </div>
+            <div class="grid3">
+              <div class="field"><label>可接受年份</label><select><option>不限</option><option>2024 年及以后</option><option>2023 年及以后</option><option>2022 年及以后</option></select></div>
+              <div class="field"><label>品质要求</label><select><option>仅全新原装</option><option>原装库存料可接受</option><option>拆板料可接受（价格优先）</option></select></div>
+              <div class="field"><label>期望交期</label><select><option>现货（3 天内到货）</option><option>7 天内</option><option>15 天内</option><option>可等 30 天</option></select></div>
+            </div>
+            <div class="grid3">
+              <div class="field"><label>目标价（可留空）</label><input placeholder="¥7.50 / pcs"><div class="hint">填写目标价可过滤无效报价</div></div>
+              <div class="field"><label>付款方式</label><select><option>平台担保交易（推荐）</option><option>账期 30 天（需授信）</option><option>预付全款</option></select></div>
+              <div class="field"><label>发票要求</label><select><option>13% 增值税专用发票</option><option>普通发票</option><option>不需要发票</option></select></div>
+            </div>
+            <div class="field"><label>补充说明</label><textarea rows="2" placeholder="如：需提供原厂 COC，要求原厂真空包装未拆封，送货地址杭州余杭"></textarea></div>
+            <div class="row gap12">
+              <button class="btn btn-accent btn-lg" onclick="demoTip('求购单已发布！系统已推送给 68 家匹配卖家，预计 30 分钟内收到首个报价。')">📢 发布求购单</button>
+              <button class="btn btn-ghost btn-lg" onclick="demoTip('批量导入求购：上传 Excel 一次发布多个型号的求购需求')">批量导入求购</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h3>我发布的求购单</h3></div>
+          <div class="panel-bd" style="padding:0">
+            <table class="dtable">
+              <thead><tr><th>求购单号</th><th>型号</th><th>需求量</th><th>发布时间</th><th>收到报价</th><th>最低报价</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody id="myRfq"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 收到的报价 -->
+      <section id="p-quote" class="hide">
+        <div class="alert alert-warn mb16">⚠️ 报价对比时请重点核对：<b>批次年份、标盘状态、是否原厂真空包装、能否走平台担保</b>——只看单价容易踩坑。</div>
+        <div class="panel">
+          <div class="panel-hd"><h3>RFQ2608070031 · STM32F103C8T6 · 5,000 pcs 的报价对比</h3><span class="tag tag-org">5 家已报价</span></div>
+          <div class="panel-bd" style="padding:0">
+            <table class="dtable">
+              <thead><tr><th>卖家</th><th>类型</th><th>单价</th><th>总价</th><th>批次</th><th>标盘</th><th>货期</th><th>担保</th><th>信用</th><th>操作</th></tr></thead>
+              <tbody id="quoteRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel mt16">
+          <div class="panel-hd"><h3>💬 与 深圳芯联电子 的议价记录</h3><span class="tag tag-ok">在线 · 平均响应 ≤15 分钟</span></div>
+          <div class="panel-bd">
+            <div class="chat">
+              <div class="chat-bd" id="chatBody"></div>
+              <div class="chat-ft">
+                <input id="chatInput" placeholder="输入消息…" onkeydown="if(event.key==='Enter')send()">
+                <button class="btn btn-primary" onclick="send()">发送</button>
+              </div>
+            </div>
+            <div class="alert alert-warn mt12 tiny">
+              🔒 <b>为什么联系方式要脱敏？</b>平台不是不让你们联系，而是要让<b>议价过程留痕</b>——
+              一旦发生"货不对板"，这段对话就是判责证据。线下微信成交的订单，平台无法赔付。
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOM -->
+      <section id="p-bom" class="hide">
+        <div class="panel mb16">
+          <div class="panel-hd"><h3>BOM 一键配单</h3><span class="small muted">上传整单 BOM，自动匹配全站库存并生成最优采购方案</span></div>
+          <div class="panel-bd">
+            <div class="upzone" onclick="runBom()">
+              <div class="ico">📄</div><b>上传 BOM 文件（.xlsx / .csv）</b>
+              <div class="small muted mt8">支持 Altium / Cadence / KiCad / 立创 EDA 导出格式，自动识别列名</div>
+            </div>
+            <div id="bomResult" class="hide mt16"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 订单 -->
+      <section id="p-order" class="hide">
+        <div class="statgrid mb16">
+          <div class="stat"><span>待付款</span><strong style="color:var(--warn)">2</strong><div class="delta muted small">锁库剩余 18 分钟</div></div>
+          <div class="stat"><span>待收货</span><strong style="color:var(--brand)">5</strong><div class="delta muted small">3 单在途</div></div>
+          <div class="stat"><span>待验收确认</span><strong>3</strong><div class="delta muted small">7 天验货期内</div></div>
+          <div class="stat"><span>本月采购额</span><strong>¥86,400</strong><div class="delta down">↓ 12% 环比</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd"><h3>订单列表</h3></div>
+          <div class="panel-bd" style="padding:0">
+            <table class="dtable">
+              <thead><tr><th>订单号</th><th>型号 / 数量</th><th>金额</th><th>卖家</th><th>支付方式</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody id="orderRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel mt16">
+          <div class="panel-hd"><h3>订单 HT2608070006 全流程追踪</h3></div>
+          <div class="panel-bd">
+            <ul class="tl">
+              <li class="done"><b>下单锁库</b><span>2026-08-07 09:12 · 5,000 pcs 已锁定，卖家库存同步扣减</span></li>
+              <li class="done"><b>货款托管</b><span>2026-08-07 09:18 · ¥39,700 已进入平台监管账户（招商银行专户）</span></li>
+              <li class="now"><b>卖家备货中</b><span>预计 2026-08-07 17:00 前发货 · 超时未发货自动全额退款并扣卖家信用分</span></li>
+              <li><b>物流在途</b><span>平台同步顺丰运单，可实时查看</span></li>
+              <li><b>到货验收（7 天验货期）</b><span>可加购第三方开封检测 ¥380 / 批</span></li>
+              <li><b>确认收货 · 放款</b><span>确认后 T+1 结算给卖家，双向评价</span></li>
+            </ul>
+            <div class="row gap12 mt16">
+              <button class="btn btn-ghost" onclick="demoTip('已催促卖家发货')">催发货</button>
+              <button class="btn btn-ghost" onclick="demoTip('加购第三方检测：合作机构包括 SGS、华测 CTI、赛宝实验室。含 X-Ray、开封目检、电性能抽测，出具 PDF 报告。')">🔬 加购第三方检测</button>
+              <button class="btn btn-ghost" style="color:var(--red);border-color:#f5c2c0" onclick="demoTip('申请取消订单：卖家未发货前可无条件取消，货款原路退回（1-3 个工作日）。')">申请取消</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 争议 -->
+      <section id="p-dispute" class="hide">
+        <div class="panel mb16">
+          <div class="panel-hd"><h3>争议处理机制</h3><span class="tag tag-ok">平均 3.2 天结案</span></div>
+          <div class="panel-bd">
+            <div class="steps mb24">
+              <div class="step"><b>发起争议</b><span>签收 7 天内<br>上传照片/视频证据</span></div>
+              <div class="step"><b>资金冻结</b><span>平台立即冻结<br>托管货款</span></div>
+              <div class="step"><b>卖家举证</b><span>48 小时内提交<br>批次/COC/来源凭证</span></div>
+              <div class="step"><b>第三方检测</b><span>争议大额订单<br>送 SGS/CTI 检测</span></div>
+              <div class="step"><b>平台裁决</b><span>依据 IM 记录 +<br>检测报告判责</span></div>
+              <div class="step"><b>执行赔付</b><span>退货退款 / 部分退款<br>假货则从保证金赔十</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="panel" style="padding:16px"><b style="font-size:13.5px">📊 判责规则（公开透明）</b>
+                <table class="dtable mt12">
+                  <tr><td>型号/批次与描述不符</td><td><span class="tag tag-red">卖家全责</span></td></tr>
+                  <tr><td>经检测为翻新/仿冒</td><td><span class="tag tag-red">假一赔十</span></td></tr>
+                  <tr><td>数量短少</td><td><span class="tag tag-warn">卖家补发或退差</span></td></tr>
+                  <tr><td>包装破损但功能正常</td><td><span class="tag tag-warn">协商部分退款</span></td></tr>
+                  <tr><td>物流导致损坏</td><td><span class="tag tag-blue">平台垫付后向物流追偿</span></td></tr>
+                  <tr><td>买家自行选型错误</td><td><span class="tag tag-gray">买家承担（可协商退货扣 8%）</span></td></tr>
+                </table></div>
+              <div class="panel" style="padding:16px"><b style="font-size:13.5px">⚖️ 我的争议单</b>
+                <div class="mt12" style="border:1px solid #f5c2c0;background:var(--red-l);border-radius:4px;padding:12px">
+                  <div class="row between center"><span class="mono bold" style="font-size:12.5px">DS26073001</span><span class="tag tag-red">检测中</span></div>
+                  <div class="tiny mt8" style="line-height:1.7">
+                    订单 HT2607280033 · IRF540NSTRLPBF × 3,200 pcs<br>
+                    诉求：<b>丝印与原厂不符，疑似打磨翻新</b><br>
+                    进度：样品已送华测 CTI，预计 08-09 出报告<br>
+                    冻结金额：<b>¥16,160</b>（如判定假货，赔付上限 ¥161,600）</div>
+                  <button class="btn btn-ghost btn-sm btn-block mt12" onclick="demoTip('查看争议详情与举证材料')">查看详情</button>
+                </div>
+                <button class="btn btn-accent btn-block mt12" onclick="demoTip('发起新争议：选择订单 → 选择争议类型 → 上传证据（外观照、X-Ray、测试数据）')">＋ 发起新争议</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 支付与授信 -->
+      <section id="p-credit" class="hide">
+        <div class="panel mb16">
+          <div class="panel-hd"><h3>支付方式</h3></div>
+          <div class="panel-bd">
+            <table class="spec-table">
+              <tr><th>🛡️ 平台担保交易<br><span class="tag tag-ok">推荐</span></th>
+                <td>货款先付入平台监管账户（银行存管），卖家发货 → 买家验收 → T+1 放款。<b>唯一享受"假一赔十"保障的方式。</b><br>
+                  <span class="muted small">手续费：买家 0，卖家承担 0.8%-2%（按等级）</span></td></tr>
+              <tr><th>🏦 对公转账</th><td>大额订单（≥10 万）常用，仍需通过平台生成的专属虚拟账户入账才算担保交易。<br>
+                  <span class="muted small">到账 T+0，需上传水单</span></td></tr>
+              <tr><th>💳 微信 / 支付宝</th><td>单笔 ≤ ¥50,000，适合小批量打样采购，即时到账。</td></tr>
+              <tr><th>📅 账期支付</th><td>需通过平台授信（基于企业征信 + 历史交易），当前额度 <b style="color:var(--ok)">¥300,000</b>，账期 30 / 60 天。<br>
+                  <span class="muted small">平台向卖家收 0.5%/月 风控服务费，卖家可选择是否接受账期订单</span></td></tr>
+              <tr><th>📃 银行承兑汇票</th><td>≥ ¥100,000 订单支持，需卖家同意，平台提供票据真伪核验服务。</td></tr>
+            </table>
+            <div class="alert alert-warn mt16">
+              🚫 <b>严禁线下私下转账。</b>一旦发现，买卖双方各扣 100 信用分。线下交易发生纠纷，平台<b>不提供任何担保与赔付</b>——
+              这是平台价值的核心边界，也是我们能持续压低佣金的前提。
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd"><h3>我的授信</h3></div>
+          <div class="panel-bd">
+            <div class="statgrid">
+              <div class="stat"><span>总额度</span><strong>¥300,000</strong></div>
+              <div class="stat"><span>已用额度</span><strong style="color:var(--warn)">¥86,400</strong></div>
+              <div class="stat"><span>可用额度</span><strong style="color:var(--ok)">¥213,600</strong></div>
+              <div class="stat"><span>账期</span><strong>30 天</strong></div>
+            </div>
+            <div class="alert alert-info mt16">💡 连续 6 个月按时回款且累计采购 ≥ ¥100 万，可申请提额至 ¥1,000,000 并延长至 60 天账期。
+              <a href="javascript:;" style="color:var(--brand)" onclick="demoTip('提交提额申请，需补充近 2 年财报与银行流水')">申请提额 →</a></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 企业资料 -->
+      <section id="p-cert" class="hide">
+        <div class="panel">
+          <div class="panel-hd"><h3>企业资料</h3><span class="tag tag-ok">已认证</span></div>
+          <div class="panel-bd">
+            <table class="spec-table">
+              <tr><th>企业名称</th><td>杭州智联智能科技有限公司 <span class="tag tag-ok">✓ 工商核验</span></td></tr>
+              <tr><th>信用代码</th><td class="mono">91330100MA2C****4F</td></tr>
+              <tr><th>企业类型</th><td>方案商 / 整机制造 · 员工 120 人</td></tr>
+              <tr><th>主营产品</th><td>工业物联网网关、智能电表模组</td></tr>
+              <tr><th>年采购规模</th><td>约 ¥1,200 万</td></tr>
+              <tr><th>常用收货地址</th><td>浙江省杭州市余杭区**产业园 3 号楼 · 收货人 李** · 138****4402</td></tr>
+              <tr><th>开票信息</th><td>已完善（13% 专票抬头、税号、开户行、地址电话）</td></tr>
+              <tr><th>采购偏好</th><td><span class="tag tag-blue">仅全新原装</span> <span class="tag tag-blue">要求 COC</span> <span class="tag tag-blue">2023 年后批次</span>
+                <span class="muted small">· 系统据此优先推荐符合偏好的库存</span></td></tr>
+            </table>
+            <div class="alert alert-info mt16">💡 完善企业资料可解锁：账期授信、专属客户经理、卖家优先响应、企业采购数据看板。</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+renderHeader('buyer.html', {role:'买家：杭州智联智能科技'});
+renderFooter();
+renderDemoNote('买家中心 · 左侧菜单可切换');
+
+const PAGES = ['rfq','quote','bom','order','dispute','credit','cert'];
+function go(el){
+  document.querySelectorAll('.cmenu a').forEach(a=>a.classList.remove('on'));
+  el.classList.add('on');
+  PAGES.forEach(p=>document.getElementById('p-'+p).classList.add('hide'));
+  document.getElementById('p-'+el.dataset.p).classList.remove('hide');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+if(qs('tab')){ const t = document.querySelector(`[data-p=${qs('tab')}]`); if(t) go(t); }
+
+document.getElementById('bSel').innerHTML = '<option>不限品牌</option>' +
+  Object.keys(BRANDS).map(b=>`<option>${fmt.brandCn(b)}（${b}）</option>`).join('');
+
+// 我的求购
+document.getElementById('myRfq').innerHTML = INQUIRIES.map((r,i)=>`<tr>
+  <td class="mono tiny">${r.id}</td>
+  <td class="mono bold" style="color:var(--brand)">${r.mpn}</td>
+  <td class="mono">${fmt.qty(r.qty)}</td>
+  <td class="tiny muted">${r.time}</td>
+  <td class="mono">${r.quotes} 家</td>
+  <td class="mono" style="color:var(--red)">${r.quotes?fmt.price(6.5+i*0.9):'—'}</td>
+  <td><span class="tag ${r.status==='待报价'?'tag-org':r.status==='已成交'?'tag-ok':r.status==='已关闭'?'tag-gray':'tag-blue'}">${r.status}</span></td>
+  <td>${r.quotes?'<button class="btn btn-primary btn-sm" onclick="go(document.querySelector(\'[data-p=quote]\'))">对比报价</button>'
+    :'<a href="javascript:;" style="color:var(--muted)">等待中</a>'}</td></tr>`).join('');
+
+// 报价对比
+const quotes = [
+  ['深圳芯联电子','授权代理商',7.94,'2024+','原厂整盘 2500/Reel','现货 · 当日发',true,4.9],
+  ['上海derek微电子','授权代理商',8.12,'2025+','原厂整盘 2500/Reel','现货 · 当日发',true,4.9],
+  ['东莞恒芯电子','独立贸易商',7.62,'2023+','原厂整盘 2500/Reel','现货 · 1 天',true,4.7],
+  ['香港环宇国际','独立贸易商',7.28,'2022+','拆盘散装','跨境 2-3 天',true,4.6],
+  ['某某电子商行','独立贸易商',6.45,'未申报','散装','现货',false,3.8]
+];
+document.getElementById('quoteRows').innerHTML = quotes.map((q,i)=>`<tr ${i===0?'style="background:var(--ok-l)"':''}>
+  <td><b>${q[0]}</b>${i===0?' <span class="tag tag-ok">推荐</span>':''}</td>
+  <td><span class="tag ${q[1]==='授权代理商'?'tag-ok':'tag-blue'}">${q[1]}</span></td>
+  <td class="mono bold" style="color:var(--red);font-size:14px">¥${q[2].toFixed(2)}</td>
+  <td class="mono">¥${fmt.qty(Math.round(q[2]*5000))}</td>
+  <td>${q[3]==='未申报'?'<span class="tag tag-red">未申报</span>':'<b>'+q[3]+'</b>'}</td>
+  <td class="tiny">${q[4]}</td>
+  <td class="tiny">${q[5]}</td>
+  <td>${q[6]?'<span class="tag tag-ok">✓ 支持</span>':'<span class="tag tag-red">✗ 拒绝</span>'}</td>
+  <td>⭐ ${q[7]}</td>
+  <td>${q[6]?'<button class="btn btn-accent btn-sm" onclick="demoTip(\'进入担保下单流程\')">下单</button>'
+    :'<span class="tiny" style="color:var(--red)">风险高</span>'}</td></tr>`).join('') +
+  `<tr><td colspan="10" class="small" style="background:#fffbf5;color:#8a5300;padding:12px">
+    ⚠️ <b>平台风险提示</b>：最低价 ¥6.45 的卖家<b>未申报批次年份、拒绝担保交易、信用分仅 3.8</b>，
+    历史有 2 次品质投诉。比最优推荐便宜 ¥7,450，但风险敞口是全额 ¥32,250。<b>不建议采购。</b></td></tr>`;
+
+// IM
+const msgs = [
+  {t:'sys',c:'⚠️ 本对话已加密存档，是纠纷判责依据。请勿线下转账。'},
+  {t:'them',c:'您好，STM32F103C8T6 我们 2024 年批次现货 87,500 pcs，原厂整盘未拆封，5000 pcs 报 ¥7.94。'},
+  {t:'me',c:'能提供 COC 吗？另外这批货是原厂真空包装还是已经拆过？'},
+  {t:'them',c:'可以提供 ST 原厂 COC 和我方进货 Invoice。整盘真空包装未拆封，湿度卡完好，可以先拍视频给您看。'},
+  {t:'me',c:'好，那按 5000 走担保交易。价格能不能到 7.8？后面月度大概 2 万的量。'},
+  {t:'them',c:'7.8 可以，但需要您确认月度框架。我发个议价单过来，锁价 3 个月。'},
+  {t:'sys',c:'📄 卖家发送《议价单 #Q26080701》：5,000 pcs @ ¥7.80 · 支持平台担保 · 有效期 24 小时'}
+];
+function draw(){
+  document.getElementById('chatBody').innerHTML = msgs.map(m=>
+    m.t==='sys' ? `<div class="msg-sys">${m.c}</div>`
+    : `<div class="msg ${m.t==='me'?'me':''}"><div class="av">${m.t==='me'?'我':'卖'}</div><div class="bub">${m.c}</div></div>`).join('');
+  const b=document.getElementById('chatBody'); b.scrollTop=b.scrollHeight;
+}
+function send(){
+  const i=document.getElementById('chatInput'); if(!i.value.trim())return;
+  msgs.push({t:'me',c:i.value}); i.value=''; draw();
+  setTimeout(()=>{msgs.push({t:'them',c:'收到，我确认一下马上回复您。'});draw();},700);
+}
+draw();
+
+// 订单
+document.getElementById('orderRows').innerHTML = ORDERS.map(o=>`<tr>
+  <td class="mono tiny">${o.id}</td>
+  <td><span class="mono bold" style="color:var(--brand)">${o.mpn}</span><div class="tiny muted">${fmt.qty(o.qty)} pcs</div></td>
+  <td class="mono bold">¥${fmt.qty(o.amt)}</td>
+  <td>${Object.values(SELLERS)[Math.floor(Math.random()*6)].name.slice(0,10)}…</td>
+  <td><span class="tag ${o.pay==='平台担保'?'tag-ok':'tag-warn'}">${o.pay}</span></td>
+  <td><span class="tag ${o.statusTag}">${o.status}</span></td>
+  <td>${o.status==='待收货确认'?'<button class="btn btn-primary btn-sm" onclick="demoTip(\'确认收货后 T+1 放款给卖家，操作不可撤销。建议先完成验货。\')">确认收货</button>'
+    : o.status==='质保申诉中'?'<button class="btn btn-accent btn-sm" onclick="go(document.querySelector(\'[data-p=dispute]\'))">查看争议</button>'
+    : '<a href="javascript:;" style="color:var(--brand)" onclick="demoTip(\'订单详情\')">详情</a>'}</td></tr>`).join('');
+
+// BOM
+function runBom(){
+  const z = document.querySelector('#p-bom .upzone');
+  z.innerHTML = '<div class="ico">⏳</div><b>正在匹配 网关主板_BOM_V2.3.xlsx …</b>';
+  setTimeout(()=>{
+    z.innerHTML = '<div class="ico">✅</div><b>网关主板_BOM_V2.3.xlsx 匹配完成</b><div class="small muted mt8">共 86 个物料行 · 用时 2.4 秒</div>';
+    const items = PRODUCTS.slice(0,8);
+    document.getElementById('bomResult').classList.remove('hide');
+    document.getElementById('bomResult').innerHTML = `
+      <div class="statgrid mb16">
+        <div class="stat"><span>BOM 物料数</span><strong>86</strong></div>
+        <div class="stat"><span>完全匹配</span><strong style="color:var(--ok)">79</strong><div class="delta muted small">91.9% 齐套率</div></div>
+        <div class="stat"><span>仅有替代料</span><strong style="color:var(--warn)">5</strong></div>
+        <div class="stat"><span>无货需求购</span><strong style="color:var(--red)">2</strong></div>
+      </div>
+      <div class="alert alert-ok mb12">✅ 已生成 3 套采购方案。<b>方案 A（最低价）</b>合计 ¥48,620，需向 6 家卖家下单；
+        <b>方案 B（最少卖家）</b>合计 ¥51,180，仅 2 家卖家、物流最省；
+        <b>方案 C（最高品质）</b>合计 ¥56,340，全部授权代理商 + 2024 年后批次。</div>
+      <table class="dtable" style="border:1px solid var(--line);border-radius:4px">
+        <thead><tr><th>位号</th><th>型号</th><th>用量</th><th>需求数</th><th>匹配结果</th><th>单价</th><th>小计</th><th>卖家</th></tr></thead>
+        <tbody>${items.map((p,i)=>`<tr>
+          <td class="tiny mono">${['C1-C12','U1','R4-R9','U3','L2','Q1-Q4','Y1','J2'][i]}</td>
+          <td class="mono bold" style="color:var(--brand)">${p.mpn}</td>
+          <td class="mono">${[12,1,6,1,2,4,1,1][i]}</td>
+          <td class="mono">${fmt.qty([12,1,6,1,2,4,1,1][i]*1000)}</td>
+          <td>${i===6?'<span class="tag tag-warn">替代料</span>':'<span class="tag tag-ok">现货齐套</span>'}</td>
+          <td class="mono" style="color:var(--red)">${fmt.price(p.tiers[1].p)}</td>
+          <td class="mono">¥${([12,1,6,1,2,4,1,1][i]*1000*p.tiers[1].p).toFixed(2)}</td>
+          <td class="tiny">${SELLERS[p.seller].name.slice(0,8)}…</td></tr>`).join('')}
+        <tr><td colspan="8" class="tiny muted" style="text-align:center;padding:10px">… 其余 78 行已折叠 …</td></tr></tbody>
+      </table>
+      <div class="row gap12 mt16">
+        <button class="btn btn-accent btn-lg" onclick="demoTip('方案 A 已拆分为 6 张担保订单，可一次性支付。')">🛒 按方案 A 一键下单（¥48,620）</button>
+        <button class="btn btn-ghost btn-lg" onclick="demoTip('导出 BOM匹配结果.xlsx')">导出比价表</button>
+        <button class="btn btn-ghost btn-lg" onclick="go(document.querySelector('[data-p=rfq]'))">为 2 个缺货料发布求购</button>
+      </div>`;
+  }, 1400);
+}
+</script>
+</body>
+</html>

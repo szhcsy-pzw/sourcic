@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>芯汇通 SourcIC · 电子元器件库存交易平台</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+
+<div class="wrap">
+  <!-- Hero -->
+  <div class="hero">
+    <aside class="side-cat" id="sideCat"></aside>
+    <div class="hero-banner">
+      <img class="hero-art" src="assets/hero.svg" alt="">
+      <h1>把沉睡的库存，<em>变成流动的现金</em></h1>
+      <p>聚合授权代理商、独立贸易商与工厂呆料库存。买家一键找料比价，卖家一键上架变现；全程平台资金托管，假一赔十。</p>
+      <div class="hero-stats">
+        <div><strong>1,286万</strong><span>在售库存 SKU</span></div>
+        <div><strong>3,417家</strong><span>认证卖家企业</span></div>
+        <div><strong>≤22分钟</strong><span>平均首次报价</span></div>
+        <div><strong>99.2%</strong><span>担保交易履约率</span></div>
+      </div>
+      <div class="row gap12 mt24">
+        <a href="register.html?role=buyer" class="btn btn-accent btn-lg">我是买家 · 免费找料</a>
+        <a href="register.html?role=seller" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35)">我是卖家 · 上传库存</a>
+      </div>
+    </div>
+    <aside class="hero-side">
+      <div class="bold mb12" style="font-size:14px">🔥 实时求购需求</div>
+      <div class="col gap8" id="rfqFeed"></div>
+      <a href="seller.html?tab=rfq" class="btn btn-ghost btn-block btn-sm mt12">查看全部求购 →</a>
+    </aside>
+  </div>
+
+  <!-- 四大能力 -->
+  <div class="feats">
+    <div class="feat"><div class="fi">🔍</div><div><b>海量现货可检索</b><span>型号 / 参数 / 封装 / 年份多维筛选，支持模糊型号与国产替代推荐</span></div></div>
+    <div class="feat"><div class="fi">🛡️</div><div><b>平台资金托管</b><span>货款先入平台监管账户，买家确认收货后 T+1 结算给卖家</span></div></div>
+    <div class="feat"><div class="fi">🔬</div><div><b>第三方开封检测</b><span>大额订单可加购 X-Ray / 开封验货，出具检测报告，假一赔十</span></div></div>
+    <div class="feat"><div class="fi">💬</div><div><b>站内 IM + 溯源</b><span>询价、议价、改价全程留痕，纠纷时作为判责依据</span></div></div>
+  </div>
+
+  <!-- AI 找料助手 -->
+  <div class="panel mt24" style="border:1px solid var(--brand);background:linear-gradient(120deg,#0e2d5c,#1352A2);color:#fff">
+    <div class="panel-bd" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div>
+        <h3 style="color:#fff;margin-bottom:6px">🤖 AI 找料助手（Beta）</h3>
+        <p class="small" style="color:rgba(255,255,255,.82)">用一句话描述你要的料，自动解析型号 / 封装 / 品牌 / 年份并命中库存；可接大模型，无 Key 也能用内置规则引擎。</p>
+      </div>
+      <a href="ai.html" class="btn btn-accent btn-lg">立即体验 →</a>
+    </div>
+  </div>
+
+  <!-- 双入口 -->
+  <div class="mt24" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="panel">
+      <div class="panel-hd"><h3>🛒 我是买家（采购方）</h3><span class="tag tag-blue">注册即用 · 0 费用</span></div>
+      <div class="panel-bd">
+        <p class="muted small mb16">面向 EMS 代工厂、方案公司、整机厂、研发工程师。找料、比价、担保下单一站完成。</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <a class="entry-card" href="search.html"><div class="ec-hd"><span class="ec-ico" style="background:var(--brand-l);color:var(--brand)">🔍</span>现货搜索</div><p>按型号/参数直接找现货，实时看库存与阶梯价</p></a>
+          <a class="entry-card" href="buyer.html?tab=bom"><div class="ec-hd"><span class="ec-ico" style="background:var(--accent-l);color:var(--accent)">📄</span>BOM 配单</div><p>上传 Excel 整单匹配，一键生成多家比价方案</p></a>
+          <a class="entry-card" href="buyer.html"><div class="ec-hd"><span class="ec-ico" style="background:var(--ok-l);color:var(--ok)">📋</span>发布求购</div><p>冷门/停产料发布 RFQ，卖家主动来报价</p></a>
+          <a class="entry-card" href="trust.html"><div class="ec-hd"><span class="ec-ico" style="background:#f3eaff;color:#7b3fe4">🛡️</span>担保下单</div><p>货款托管，验货合格再放款，假一赔十</p></a>
+        </div>
+        <a href="register.html?role=buyer" class="btn btn-primary btn-block mt16">买家免费注册 →</a>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hd"><h3>🏭 我是卖家（供货方）</h3><span class="tag tag-org">前 12 个月 0 佣金</span></div>
+      <div class="panel-bd">
+        <p class="muted small mb16">面向授权代理商、独立贸易商、工厂呆料处理部门、原厂直营。上传即曝光，成交才收费。</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <a class="entry-card" href="seller.html?tab=upload"><div class="ec-hd"><span class="ec-ico" style="background:var(--accent-l);color:var(--accent)">⬆</span>批量上传库存</div><p>Excel / ERP API 对接，自动清洗归一化型号</p></a>
+          <a class="entry-card" href="seller.html?tab=rfq"><div class="ec-hd"><span class="ec-ico" style="background:var(--brand-l);color:var(--brand)">💬</span>抢单报价</div><p>实时接收匹配求购，30 秒完成报价</p></a>
+          <a class="entry-card" href="seller.html"><div class="ec-hd"><span class="ec-ico" style="background:var(--ok-l);color:var(--ok)">📊</span>经营看板</div><p>曝光/询价/成交漏斗，滞销料预警与调价建议</p></a>
+          <a class="entry-card" href="trust.html"><div class="ec-hd"><span class="ec-ico" style="background:#f3eaff;color:#7b3fe4">💰</span>快速回款</div><p>确认收货 T+1 结算，支持保理垫资加速</p></a>
+        </div>
+        <a href="register.html?role=seller" class="btn btn-accent btn-block mt16">卖家企业认证入驻 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 热门库存 -->
+  <div class="mt32">
+    <div class="sec-title">
+      <h2><span class="bar"></span>今日热门现货</h2>
+      <a href="search.html" class="more">查看全部 1,286 万条库存 →</a>
+    </div>
+    <div class="pgrid" id="hotGrid"></div>
+  </div>
+
+  <!-- 特色专区 -->
+  <div class="mt32">
+    <div class="sec-title"><h2><span class="bar"></span>特色库存专区</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <a class="panel" href="search.html?zone=factory" style="padding:18px;display:block">
+        <div class="row center gap8 mb8"><span style="font-size:22px">🏭</span><b>工厂呆料清仓</b></div>
+        <p class="small muted">整机厂/EMS 项目结余料，原厂盘装未拆封，价格可低至市场价 4-6 折</p>
+        <div class="mt12"><span class="tag tag-org">在售 8.2 万条</span></div>
+      </a>
+      <a class="panel" href="search.html?zone=eol" style="padding:18px;display:block">
+        <div class="row center gap8 mb8"><span style="font-size:22px">🔎</span><b>停产/紧缺料</b></div>
+        <p class="small muted">EOL、NRND、长交期料专区，覆盖工业与汽车电子难寻型号</p>
+        <div class="mt12"><span class="tag tag-red">在售 1.4 万条</span></div>
+      </a>
+      <a class="panel" href="search.html?zone=domestic" style="padding:18px;display:block">
+        <div class="row center gap8 mb8"><span style="font-size:22px">🇨🇳</span><b>国产替代</b></div>
+        <p class="small muted">Pin-to-Pin 兼容型号推荐，附替代对照表与切换风险提示</p>
+        <div class="mt12"><span class="tag tag-ok">在售 21 万条</span></div>
+      </a>
+      <a class="panel" href="search.html?zone=agent" style="padding:18px;display:block">
+        <div class="row center gap8 mb8"><span style="font-size:22px">✅</span><b>授权代理专区</b></div>
+        <p class="small muted">原厂授权可查，附授权书编号，批次可追溯至原厂</p>
+        <div class="mt12"><span class="tag tag-blue">在售 340 万条</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 交易闭环 -->
+  <div class="mt32 panel">
+    <div class="panel-hd"><h3>交易闭环怎么跑通</h3><a href="trust.html" class="small muted">详细规则 →</a></div>
+    <div class="panel-bd">
+      <div class="steps">
+        <div class="step"><b>找料 / 发布求购</b><span>搜索现货或发 RFQ<br>系统自动匹配卖家</span></div>
+        <div class="step"><b>站内 IM 议价</b><span>联系方式脱敏<br>全程留痕可溯源</span></div>
+        <div class="step"><b>下单 · 货款托管</b><span>支付进平台监管账户<br>卖家看到「已托管」才发货</span></div>
+        <div class="step"><b>发货 · 物流在途</b><span>平台同步运单<br>可加购第三方检测</span></div>
+        <div class="step"><b>验收确认</b><span>7 天验货期<br>异常可发起争议</span></div>
+        <div class="step"><b>放款 · 评价</b><span>T+1 结算给卖家<br>双向信用累积</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 认证卖家 -->
+  <div class="mt32">
+    <div class="sec-title"><h2><span class="bar"></span>优质认证卖家</h2><a href="info.html?t=sellers" class="more">全部卖家 →</a></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="sellerGrid"></div>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+renderHeader('index.html');
+renderFooter();
+renderDemoNote('首页 · 全部数据为模拟数据');
+
+// 左侧分类
+document.getElementById('sideCat').innerHTML = CATEGORIES.map(c =>
+  `<a href="search.html?cat=${encodeURIComponent(c.name)}"><span>${c.icon} ${c.name}</span><span class="muted">›</span></a>`
+).join('');
+
+// 求购流
+document.getElementById('rfqFeed').innerHTML = INQUIRIES.map(r=>`
+  <div style="border:1px solid var(--line-2);border-radius:4px;padding:9px 10px">
+    <div class="row between center">
+      <span class="mono bold" style="font-size:12.5px;color:var(--brand)">${r.mpn}</span>
+      <span class="tag ${r.status==='待报价'?'tag-org':r.status==='已成交'?'tag-ok':'tag-gray'}">${r.status}</span>
+    </div>
+    <div class="tiny muted mt8">需求 ${fmt.qty(r.qty)} pcs · ${r.buyer} · ${r.time}</div>
+  </div>`).join('');
+
+// 热门现货
+document.getElementById('hotGrid').innerHTML =
+  ['P1001','P1002','P1004','P1006','P1009','P1005','P1003','P1024','P1022','P1008']
+  .map(id => productCard(getProduct(id))).join('');
+
+// 卖家
+document.getElementById('sellerGrid').innerHTML = Object.entries(SELLERS).slice(0,6).map(([k,s])=>`
+  <div class="panel" style="padding:16px">
+    <div class="row center gap12">
+      <div class="avt" style="width:44px;height:44px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px">${s.name[0]}</div>
+      <div class="grow">
+        <div class="bold" style="font-size:13.5px">${s.name}</div>
+        <div class="tiny muted mt8">${s.city} · 经营 ${s.years} 年</div>
+      </div>
+    </div>
+    <div class="row gap4 mt12 wrapf">
+      <span class="tag ${s.type==='授权代理商'?'tag-ok':s.type==='工厂呆料'?'tag-org':'tag-blue'}">${s.type}</span>
+      <span class="tag tag-line">✓ 营业执照已核验</span>
+      <span class="tag tag-line">${s.bond}</span>
+    </div>
+    <div class="metric mt12">
+      <div><strong>${s.rating}</strong><span>综合评分</span></div>
+      <div><strong>${fmt.qty(s.deals)}</strong><span>累计成交</span></div>
+      <div><strong>${s.resp}</strong><span>响应时长</span></div>
+    </div>
+  </div>`).join('');
+</script>
+</body>
+</html>

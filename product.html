@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>产品详情 · 芯汇通 SourcIC</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+
+<div class="wrap">
+  <div class="crumb" id="crumb"></div>
+
+  <div class="dtl">
+    <!-- 左：图片 -->
+    <div class="col gap16">
+      <div class="gal">
+        <div class="gal-main" id="galMain"></div>
+        <div class="gal-thumbs" id="galThumbs"></div>
+        <div class="tiny muted mt12" style="line-height:1.7">
+          📷 实拍图由卖家上传，平台对上传时间与 EXIF 做校验。<br>
+          点击「申请实物拍照」可要求卖家 4 小时内提供带当日水印的实拍图。
+        </div>
+        <button class="btn btn-ghost btn-block btn-sm mt12" onclick="demoTip('已向卖家发送实物拍照请求，预计 4 小时内回传。')">📸 申请实物拍照 / 视频</button>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><h3 style="font-size:14px">品质与合规</h3></div>
+        <div class="panel-bd col gap8" id="qualityBox"></div>
+      </div>
+    </div>
+
+    <!-- 中：信息 -->
+    <div class="col gap16">
+      <div class="dinfo">
+        <div class="row center gap8 mb8" id="topTags"></div>
+        <h1 id="mpn"></h1>
+        <div class="sub" id="desc"></div>
+
+        <dl class="kv" id="kv"></dl>
+
+        <div class="pricebox">
+          <div class="row between center mb12">
+            <b style="font-size:14px">阶梯价格（人民币 · 含 13% 增值税专票 · 不含运费）</b>
+            <span class="tag tag-warn" id="priceTime"></span>
+          </div>
+          <table class="ptable"><thead><tr id="pQ"></tr></thead><tbody><tr id="pP"></tr></tbody></table>
+          <div class="row center gap16 mt16" style="border-top:1px dashed #ffdcbe;padding-top:12px">
+            <span class="small">采购数量</span>
+            <div class="row center" style="border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#fff">
+              <button style="padding:6px 12px" onclick="stepQty(-1)">−</button>
+              <input id="buyQty" type="number" style="width:100px;text-align:center;border:none;border-left:1px solid var(--line);border-right:1px solid var(--line);padding:6px" oninput="calc()">
+              <button style="padding:6px 12px" onclick="stepQty(1)">＋</button>
+            </div>
+            <span class="small muted" id="qtyHint"></span>
+            <div class="grow right">
+              <span class="small muted">预估小计</span>
+              <div style="font-size:24px;font-weight:800;color:var(--red)" class="mono" id="total">¥0.00</div>
+            </div>
+          </div>
+          <div class="row gap12 mt16">
+            <a href="javascript:;" class="btn btn-accent btn-lg grow" onclick="demoTip('已进入担保下单流程：\n① 确认收货地址与发票信息\n② 支付货款至平台监管账户\n③ 卖家收到「已托管」通知后发货')">🛡️ 担保下单</a>
+            <a href="javascript:;" class="btn btn-primary btn-lg grow" onclick="scrollChat()">💬 议价 / 询价</a>
+            <button class="btn btn-ghost btn-lg" onclick="demoTip('已加入 BOM 配单清单。')">＋ BOM</button>
+          </div>
+          <div class="tiny muted mt12">支持：平台担保交易 · 对公转账 · 微信/支付宝（≤5万）· 账期 30/60 天（需授信）· 银行承兑汇票</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div>
+        <div class="tabs">
+          <a href="javascript:;" class="on" data-t="spec" onclick="tab(this)">技术参数</a>
+          <a href="javascript:;" data-t="pack" onclick="tab(this)">包装与批次</a>
+          <a href="javascript:;" data-t="alt" onclick="tab(this)">替代型号</a>
+          <a href="javascript:;" data-t="chat" onclick="tab(this)">站内议价 IM</a>
+          <a href="javascript:;" data-t="rule" onclick="tab(this)">交易与售后规则</a>
+        </div>
+        <div class="panel" style="border-radius:0 0 var(--radius) var(--radius)">
+          <div class="panel-bd">
+            <div id="t-spec"><table class="spec-table" id="specTbl"></table>
+              <div class="alert alert-info mt16">📄 参数由平台从原厂 Datasheet 结构化解析并与卖家申报比对，不一致会标红。
+                <a href="javascript:;" onclick="demoTip('跳转原厂 Datasheet PDF。')" style="color:var(--brand)">查看 Datasheet ↗</a></div>
+            </div>
+
+            <div id="t-pack" class="hide"><table class="spec-table" id="packTbl"></table></div>
+
+            <div id="t-alt" class="hide">
+              <div class="alert alert-warn mb16">⚠️ 替代型号仅供参考，切换前请自行完成 DFM/DFT 验证。平台不对替代结果承担设计责任。</div>
+              <table class="ltable" id="altTbl"></table>
+            </div>
+
+            <div id="t-chat" class="hide">
+              <div class="alert alert-info mb12">💡 站内 IM 全程加密留痕，是纠纷判责的第一依据。<b>脱离平台线下成交将失去担保与赔付资格。</b></div>
+              <div class="chat">
+                <div class="chat-hd">
+                  <div class="row center gap8"><b id="chatSeller"></b><span class="tag tag-ok">在线</span></div>
+                  <span class="small muted">平均响应 <b id="chatResp"></b></span>
+                </div>
+                <div class="chat-bd" id="chatBody"></div>
+                <div class="chat-ft">
+                  <input id="chatInput" placeholder="输入消息…（支持发送图片、议价单、Excel 报价表）" onkeydown="if(event.key==='Enter')send()">
+                  <button class="btn btn-primary" onclick="send()">发送</button>
+                </div>
+              </div>
+              <div class="row gap8 mt12">
+                <button class="btn btn-ghost btn-sm" onclick="quick('这批货 5000 pcs，能做到多少钱？')">💰 快捷议价</button>
+                <button class="btn btn-ghost btn-sm" onclick="quick('麻烦发一下原厂 COC 和批次照片。')">📄 索要 COC</button>
+                <button class="btn btn-ghost btn-sm" onclick="quick('可以走平台担保交易吗？')">🛡️ 确认担保</button>
+                <button class="btn btn-ghost btn-sm" onclick="quick('能开 13% 增值税专用发票吗？')">🧾 发票确认</button>
+              </div>
+            </div>
+
+            <div id="t-rule" class="hide">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div><h4 class="mb12" style="font-size:14px">✅ 平台提供的保障</h4>
+                  <ul class="col gap8 small" style="line-height:1.7">
+                    <li>• <b>资金托管</b>：货款进入平台监管账户，验收合格后 T+1 结算给卖家</li>
+                    <li>• <b>假一赔十</b>：经第三方检测确认为翻新/假货，平台先行赔付货款 10 倍（上限 50 万）</li>
+                    <li>• <b>7 天验货期</b>：签收起 7 个自然日内可发起品质异议，平台冻结货款介入</li>
+                    <li>• <b>批次追溯</b>：卖家须申报批次号与来源凭证，平台存档 5 年</li>
+                    <li>• <b>物流兜底</b>：平台合作物流丢件损件由平台先行垫付</li>
+                  </ul></div>
+                <div><h4 class="mb12" style="font-size:14px">⚠️ 免责与例外</h4>
+                  <ul class="col gap8 small muted" style="line-height:1.7">
+                    <li>• 线下交易（微信/私下转账）不受任何保障</li>
+                    <li>• 「库存呆料 / 拆板料」类目仅保证功能可用，不保证外观与包装</li>
+                    <li>• 买家自行选择替代型号导致的设计不兼容，不属于品质问题</li>
+                    <li>• 签收超 7 天未提异议视为验收合格</li>
+                    <li>• 买家自行拆封破坏原厂真空包装后，检测结论以第三方机构为准</li>
+                  </ul></div>
+              </div>
+              <a href="trust.html" class="btn btn-primary mt16">查看完整《公平交易保障规则》 →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右：卖家 -->
+    <div class="col gap16">
+      <div class="sellerbox">
+        <div class="sv"><div class="avt" id="sAvt"></div>
+          <div class="grow"><div class="bold" style="font-size:13.5px;line-height:1.4" id="sName"></div>
+            <div class="tiny muted mt8" id="sCity"></div></div></div>
+        <div class="row gap4 mt12 wrapf" id="sTags"></div>
+        <div class="metric mt12" id="sMetric"></div>
+
+        <div class="mt16">
+          <div class="small bold mb8">联系方式（已脱敏保护）</div>
+          <div class="masked mb8"><span>📞 138****6621</span>
+            <a href="javascript:;" onclick="unmask(this,'📞 138 2266 6621')" style="color:var(--brand);font-size:11px">解锁 ›</a></div>
+          <div class="masked mb8"><span>✉️ sa****@xinlian-ec.com</span>
+            <a href="javascript:;" onclick="unmask(this,'✉️ sales@xinlian-ec.com')" style="color:var(--brand);font-size:11px">解锁 ›</a></div>
+          <div class="masked"><span>💬 微信 xl****2026</span>
+            <a href="javascript:;" onclick="unmask(this,'💬 微信 xlic2026')" style="color:var(--brand);font-size:11px">解锁 ›</a></div>
+          <div class="tiny muted mt8" style="line-height:1.6">
+            🔒 免费会员每月 5 次解锁额度；解锁行为全程记录。<b>平台强烈建议使用站内 IM</b>——线下成交不受担保保护，且卖家会失去信用积分。</div>
+        </div>
+
+        <a href="javascript:;" class="btn btn-primary btn-block mt16" onclick="tabByName('chat')">💬 站内 IM 沟通（推荐）</a>
+        <button class="btn btn-ghost btn-block mt8" onclick="demoTip('已收藏该卖家，其新上架库存会推送给你。')">⭐ 收藏卖家</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><h3 style="font-size:14px">同型号其他卖家</h3></div>
+        <div class="panel-bd col gap12" id="otherSellers"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><h3 style="font-size:14px">30 天价格走势</h3></div>
+        <div class="panel-bd"><svg viewBox="0 0 240 90" style="width:100%">
+          <polyline fill="none" stroke="#1352A2" stroke-width="2"
+            points="0,60 20,58 40,62 60,55 80,50 100,52 120,44 140,46 160,38 180,34 200,36 220,28 240,26"/>
+          <polyline fill="rgba(19,82,162,.08)" stroke="none"
+            points="0,60 20,58 40,62 60,55 80,50 100,52 120,44 140,46 160,38 180,34 200,36 220,28 240,26 240,90 0,90"/>
+        </svg>
+        <div class="row between small mt8"><span class="muted">30 天前</span>
+          <span class="up bold">↑ 8.4% 近 30 天涨幅</span><span class="muted">今日</span></div>
+        <div class="alert alert-warn mt12 tiny">📈 该型号近期供应偏紧，建议提前锁量。平台可提供「价格锁定 7 天」服务。</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt32">
+    <div class="sec-title"><h2><span class="bar"></span>看了又看</h2></div>
+    <div class="pgrid" id="relGrid"></div>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const p = getProduct(qs('id') || 'P1001');
+const s = SELLERS[p.seller];
+renderHeader('search.html');
+renderFooter();
+renderDemoNote('产品详情 · 可试用议价 IM 与联系方式解锁');
+
+document.getElementById('crumb').innerHTML =
+  `<a href="index.html">首页</a> › <a href="search.html">现货库存</a> › <a href="search.html?cat=${encodeURIComponent(p.cat)}">${p.cat}</a> › <span>${p.sub}</span> › <span style="color:var(--ink)">${p.mpn}</span>`;
+
+document.getElementById('galMain').innerHTML = compSVG(p.icon, 210);
+document.getElementById('galThumbs').innerHTML =
+  [p.icon,'conn','ic','module'].map((t,i)=>`<div class="${i===0?'on':''}">${compSVG(t,40)}</div>`).join('');
+
+document.getElementById('topTags').innerHTML = `
+  <span class="tag ${p.quality==='全新原装'?'tag-ok':'tag-warn'}">${p.quality}</span>
+  ${p.rohs?'<span class="tag tag-blue">RoHS 合规</span>':''}
+  <span class="tag tag-gray">${p.leadtime}</span>
+  <span class="tag tag-org">${p.dateCode} 批次</span>
+  ${p.qty>500000?'<span class="tag tag-blue">大批量现货</span>':''}`;
+
+document.getElementById('mpn').textContent = p.mpn;
+document.getElementById('desc').textContent = p.desc;
+
+document.getElementById('kv').innerHTML = `
+  <dt>品牌厂家</dt><dd><b>${fmt.brandCn(p.brand)}</b>（${p.brand}）
+    <a href="${fmt.brandUrl(p.brand)}" target="_blank" style="color:var(--brand);margin-left:6px">原厂官网 ↗</a>
+    <span class="tag tag-gray" style="margin-left:4px">${BRANDS[p.brand]?BRANDS[p.brand].origin:''}</span></dd>
+  <dt>器件分类</dt><dd>${p.cat} / ${p.sub}</dd>
+  <dt>封装形式</dt><dd>${p.pkg}</dd>
+  <dt>标盘数量</dt><dd><b class="mono">${p.packing}</b> <span class="muted small">（不足整盘按散装计，加收 3% 拆盘费）</span></dd>
+  <dt>生产年份</dt><dd><b>${p.dateCode}</b> <span class="muted small">（Date Code 以实物为准，误差不超过 2 个季度）</span></dd>
+  <dt>可售库存</dt><dd><b class="mono" style="color:var(--ok)">${fmt.qty(p.qty)} pcs</b> <span class="muted small">· 实时同步卖家 ERP</span></dd>
+  <dt>最小起订</dt><dd><b class="mono">${fmt.qty(p.moq)} pcs</b></dd>
+  <dt>货期</dt><dd>${p.leadtime} · ${s.ship}</dd>`;
+
+document.getElementById('priceTime').textContent = '价格更新于 12 分钟前';
+document.getElementById('pQ').innerHTML = p.tiers.map(t=>`<th>${fmt.qty(t.q)}+ pcs</th>`).join('');
+document.getElementById('pP').innerHTML = p.tiers.map(t=>`<td class="p">${fmt.price(t.p)}</td>`).join('');
+
+const qtyEl = document.getElementById('buyQty');
+qtyEl.value = p.moq;
+function stepQty(d){ qtyEl.value = Math.max(p.moq, (+qtyEl.value||0) + d * p.moq); calc(); }
+function calc(){
+  let q = +qtyEl.value || 0;
+  let tier = p.tiers[0];
+  p.tiers.forEach(t=>{ if(q >= t.q) tier = t; });
+  const hint = q < p.moq ? `<span style="color:var(--red)">低于起订量 ${fmt.qty(p.moq)}</span>`
+    : q > p.qty ? `<span style="color:var(--red)">超出可售库存</span>`
+    : `适用单价 <b>${fmt.price(tier.p)}</b>`;
+  document.getElementById('qtyHint').innerHTML = hint;
+  document.getElementById('total').textContent = '¥' + (q * tier.p).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+calc();
+
+// 品质
+document.getElementById('qualityBox').innerHTML = `
+  <div class="row between small"><span class="muted">品质状态</span><b>${p.quality}</b></div>
+  <div class="row between small"><span class="muted">RoHS</span><span class="tag tag-ok">${p.rohs?'合规':'未申报'}</span></div>
+  <div class="row between small"><span class="muted">原厂 COC</span><span class="tag ${s.type==='授权代理商'?'tag-ok':'tag-gray'}">${s.type==='授权代理商'?'可提供':'需申请'}</span></div>
+  <div class="row between small"><span class="muted">批次追溯</span><span class="tag tag-blue">已存档</span></div>
+  <div class="row between small"><span class="muted">第三方检测</span><a href="trust.html" style="color:var(--brand)">可加购 ¥380 起 ›</a></div>
+  <div class="alert alert-ok tiny mt8">🛡️ 本商品支持<b>假一赔十</b>：经指定检测机构判定为翻新/仿冒，平台先行赔付。</div>`;
+
+// 参数表
+document.getElementById('specTbl').innerHTML =
+  Object.entries(p.specs).map(([k,v])=>`<tr><th>${k}</th><td>${v}</td></tr>`).join('');
+
+// 包装批次
+document.getElementById('packTbl').innerHTML = `
+  <tr><th>包装形式</th><td><b class="mono">${p.packing}</b>（原厂标准包装）</td></tr>
+  <tr><th>整盘数量</th><td>${p.packing.split('pcs')[0]} pcs / Reel，静电防潮真空袋 + 干燥剂 + 湿度卡</td></tr>
+  <tr><th>拆盘规则</th><td>支持拆盘，最小拆分单位 ${fmt.qty(p.moq)} pcs，拆盘加收 3% 服务费</td></tr>
+  <tr><th>批次年份</th><td><b>${p.dateCode}</b>（Date Code 周批号以实物丝印为准）</td></tr>
+  <tr><th>MSL 等级</th><td>MSL 3（车间寿命 168 小时 @30°C/60%RH）</td></tr>
+  <tr><th>存储条件</th><td>&lt; 30°C / &lt; 60%RH，原厂真空包装未拆封可存 12 个月</td></tr>
+  <tr><th>来源凭证</th><td>${s.type==='授权代理商'?'原厂授权书 + 出货 Invoice（已上传平台存档）':'上游采购 Invoice（已上传平台存档，买家下单后可查看）'}</td></tr>
+  <tr><th>可售状态</th><td><span class="tag tag-ok">在库可售</span> 库存实时同步，锁库有效期 30 分钟</td></tr>`;
+
+// 替代
+const alts = PRODUCTS.filter(x=>x.sub===p.sub && x.id!==p.id).slice(0,3);
+document.getElementById('altTbl').innerHTML = `
+  <thead><tr><th>替代型号</th><th>品牌</th><th>兼容性</th><th>价格对比</th><th>库存</th><th>操作</th></tr></thead>
+  <tbody>${alts.length?alts.map(a=>{
+    const diff = ((a.tiers[0].p - p.tiers[0].p) / p.tiers[0].p * 100).toFixed(0);
+    return `<tr>
+      <td><a class="li-mpn" href="product.html?id=${a.id}">${a.mpn}</a><div class="li-attr">${a.desc}</div></td>
+      <td>${fmt.brandCn(a.brand)}</td>
+      <td>${a.pkg===p.pkg?'<span class="tag tag-ok">Pin-to-Pin 兼容</span>':'<span class="tag tag-warn">功能替代 · 需改板</span>'}</td>
+      <td class="mono ${diff<0?'down':'up'}">${fmt.price(a.tiers[0].p)}（${diff>0?'+':''}${diff}%）</td>
+      <td class="mono">${fmt.qty(a.qty)}</td>
+      <td><a href="product.html?id=${a.id}" class="btn btn-ghost btn-sm">查看</a></td></tr>`;
+  }).join('') : '<tr><td colspan="6" class="muted" style="text-align:center;padding:30px">暂无平台收录的替代型号，可发布求购让卖家推荐</td></tr>'}</tbody>`;
+
+// 卖家
+document.getElementById('sAvt').textContent = s.name[0];
+document.getElementById('sName').textContent = s.name;
+document.getElementById('sCity').textContent = `${s.city} · 经营 ${s.years} 年`;
+document.getElementById('sTags').innerHTML = `
+  <span class="tag ${s.type==='授权代理商'?'tag-ok':s.type==='工厂呆料'?'tag-org':'tag-blue'}">${s.type}</span>
+  <span class="tag tag-line">✓ 三证已核验</span>
+  <span class="tag tag-line">✓ 法人实名</span>
+  <span class="tag tag-line">${s.bond}</span>`;
+document.getElementById('sMetric').innerHTML = `
+  <div><strong>${s.rating}</strong><span>综合评分</span></div>
+  <div><strong>${fmt.qty(s.deals)}</strong><span>累计成交</span></div>
+  <div><strong>${s.resp}</strong><span>响应时长</span></div>`;
+
+// 其他卖家
+document.getElementById('otherSellers').innerHTML = Object.entries(SELLERS).filter(([k])=>k!==p.seller).slice(0,3).map(([k,o],i)=>{
+  const pr = p.tiers[0].p * (1 + (i-1)*0.06);
+  return `<div style="border:1px solid var(--line-2);border-radius:4px;padding:10px">
+    <div class="row between center"><span class="small bold">${o.name.slice(0,10)}…</span>
+      <span class="mono bold" style="color:var(--red)">${fmt.price(pr)}</span></div>
+    <div class="row between center mt8">
+      <span class="tiny muted">库存 ${fmt.qty(Math.floor(p.qty*(0.3+i*0.25)))} · ⭐${o.rating}</span>
+      <a href="javascript:;" class="tiny" style="color:var(--brand)" onclick="demoTip('切换到该卖家的报价。')">比价 ›</a></div>
+  </div>`;
+}).join('');
+
+// IM
+const chatMsgs = [
+  {t:'sys', c:'⚠️ 平台提醒：请勿私下转账。所有交易通过平台担保才享受赔付保障。本对话已加密存档。'},
+  {t:'them', c:`您好！${p.mpn} 我们现货 ${fmt.qty(p.qty)} pcs，${p.dateCode} 批次，原厂盘装未拆封，请问需要多少数量？`},
+  {t:'me', c:'先要 5000 pcs 试单，后面月需求大概 2 万。价格能不能再优惠点？'},
+  {t:'them', c:`5000 pcs 走 ${fmt.price(p.tiers[1].p)}，如果确认月度框架 2 万，可以按 ${fmt.price(p.tiers[2].p)} 锁价 3 个月。已发送议价单，请查收。`},
+  {t:'sys', c:'📄 卖家发送了《议价单 #Q26080701》：5000 pcs @ ' + fmt.price(p.tiers[1].p) + ' · 有效期 24 小时 · 支持平台担保'}
+];
+function drawChat(){
+  document.getElementById('chatBody').innerHTML = chatMsgs.map(m=>
+    m.t==='sys' ? `<div class="msg-sys">${m.c}</div>`
+    : `<div class="msg ${m.t==='me'?'me':''}"><div class="av">${m.t==='me'?'我':'卖'}</div><div class="bub">${m.c}</div></div>`
+  ).join('');
+  const b = document.getElementById('chatBody'); b.scrollTop = b.scrollHeight;
+}
+function send(){
+  const i = document.getElementById('chatInput');
+  if(!i.value.trim()) return;
+  chatMsgs.push({t:'me', c:i.value}); i.value=''; drawChat();
+  setTimeout(()=>{ chatMsgs.push({t:'them', c:'收到，我这边核实一下库存和批次，5 分钟内回复您。'}); drawChat(); }, 700);
+}
+function quick(txt){ document.getElementById('chatInput').value = txt; send(); }
+document.getElementById('chatSeller').textContent = s.name;
+document.getElementById('chatResp').textContent = s.resp;
+drawChat();
+
+// Tabs
+function tab(el){
+  document.querySelectorAll('.tabs a').forEach(a=>a.classList.remove('on'));
+  el.classList.add('on');
+  ['spec','pack','alt','chat','rule'].forEach(t=>document.getElementById('t-'+t).classList.add('hide'));
+  document.getElementById('t-'+el.dataset.t).classList.remove('hide');
+}
+function tabByName(n){ tab(document.querySelector(`.tabs a[data-t="${n}"]`)); scrollChat(); }
+function scrollChat(){
+  tab(document.querySelector('.tabs a[data-t="chat"]'));
+  document.querySelector('.tabs').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// 相关
+document.getElementById('relGrid').innerHTML =
+  PRODUCTS.filter(x=>x.id!==p.id).slice(0,5).map(x=>productCard(x)).join('');
+</script>
+</body>
+</html>

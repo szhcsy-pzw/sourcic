@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>卖家中心 · 芯汇通 SourcIC</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+
+<div class="wrap mt16">
+  <div class="console">
+    <!-- 侧栏 -->
+    <aside class="cmenu">
+      <div style="padding:12px;border-bottom:1px solid var(--line-2);margin-bottom:6px">
+        <div class="row center gap8">
+          <div style="width:34px;height:34px;border-radius:6px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">深</div>
+          <div><div class="bold" style="font-size:12.5px">深圳芯联电子</div><div class="tiny muted">授权代理商 · Lv.4</div></div>
+        </div>
+        <div class="progress mt12"><i style="width:72%"></i></div>
+        <div class="tiny muted mt8">信用分 872 / 1000 · 距 Lv.5 还差 128 分</div>
+      </div>
+      <h6>经营</h6>
+      <a href="javascript:;" data-p="dash" class="on" onclick="go(this)">📊 经营看板</a>
+      <a href="javascript:;" data-p="upload" onclick="go(this)">⬆ 上传库存</a>
+      <a href="javascript:;" data-p="stock" onclick="go(this)">📦 库存管理</a>
+      <h6>交易</h6>
+      <a href="javascript:;" data-p="rfq" onclick="go(this)">💬 求购抢单 <span class="tag tag-org" style="margin-left:auto">12</span></a>
+      <a href="javascript:;" data-p="order" onclick="go(this)">📋 订单管理 <span class="tag tag-red" style="margin-left:auto">3</span></a>
+      <a href="javascript:;" data-p="money" onclick="go(this)">💰 资金结算</a>
+      <h6>店铺</h6>
+      <a href="javascript:;" data-p="cert" onclick="go(this)">🏅 资质与认证</a>
+      <a href="javascript:;" data-p="api" onclick="go(this)">🔌 ERP / API 对接</a>
+    </aside>
+
+    <main class="col gap16">
+
+      <!-- 经营看板 -->
+      <section id="p-dash">
+        <div class="statgrid">
+          <div class="stat"><span>在售 SKU</span><strong>3,842</strong><div class="delta up">↑ 128 本周新增</div></div>
+          <div class="stat"><span>本月曝光</span><strong>62.4万</strong><div class="delta up">↑ 18.2% 环比</div></div>
+          <div class="stat"><span>询价转化率</span><strong>7.8%</strong><div class="delta down">↓ 0.6% 环比</div></div>
+          <div class="stat"><span>本月成交额</span><strong>¥186万</strong><div class="delta up">↑ 24.1% 环比</div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px" class="mt16">
+          <div class="panel">
+            <div class="panel-hd"><h3>转化漏斗（近 30 天）</h3><span class="small muted">曝光 → 点击 → 询价 → 成交</span></div>
+            <div class="panel-bd col gap12">
+              <div id="funnel"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><h3>⚠️ 滞销料预警</h3></div>
+            <div class="panel-bd col gap8" id="deadStock"></div>
+          </div>
+        </div>
+
+        <div class="panel mt16">
+          <div class="panel-hd"><h3>智能调价建议</h3><span class="tag tag-blue">基于全站 30 天成交价</span></div>
+          <div class="panel-bd">
+            <table class="dtable">
+              <thead><tr><th>型号</th><th>我的价格</th><th>全站均价</th><th>价格排名</th><th>建议</th><th>操作</th></tr></thead>
+              <tbody id="priceAdvice"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 上传库存 -->
+      <section id="p-upload" class="hide">
+        <div class="alert alert-info mb16">
+          💡 三种上传方式：① Excel 批量导入（最常用）② ERP / API 实时同步（推荐，库存不会卖超）③ 单条手工录入。
+          平台会自动清洗型号、匹配原厂 Datasheet 参数、识别重复 SKU。
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" class="mb16">
+          <div class="panel" style="padding:16px;text-align:center;border-color:var(--brand)">
+            <div style="font-size:26px">📊</div><b>Excel 批量导入</b>
+            <p class="tiny muted mt8">支持 5 万行 / 次，兼容金蝶、用友、SAP 导出格式</p>
+            <a href="javascript:;" class="btn btn-primary btn-sm btn-block mt12" onclick="demoTip('下载标准模板 库存导入模板.xlsx')">下载模板</a>
+          </div>
+          <div class="panel" style="padding:16px;text-align:center">
+            <div style="font-size:26px">🔌</div><b>ERP / API 同步</b>
+            <p class="tiny muted mt8">15 分钟增量同步，库存售罄自动下架，杜绝超卖</p>
+            <a href="javascript:;" class="btn btn-ghost btn-sm btn-block mt12" onclick="go(document.querySelector('[data-p=api]'))">查看接口文档</a>
+          </div>
+          <div class="panel" style="padding:16px;text-align:center">
+            <div style="font-size:26px">✍️</div><b>单条手工录入</b>
+            <p class="tiny muted mt8">适合稀缺料、停产料等需要精细描述的 SKU</p>
+            <a href="javascript:;" class="btn btn-ghost btn-sm btn-block mt12" onclick="document.getElementById('manualForm').scrollIntoView({behavior:'smooth'})">前往录入</a>
+          </div>
+        </div>
+
+        <div class="panel mb16">
+          <div class="panel-hd"><h3>Excel 批量导入</h3></div>
+          <div class="panel-bd">
+            <div class="upzone" onclick="mockUpload()">
+              <div class="ico">📁</div>
+              <b>点击或拖拽文件到此处上传</b>
+              <div class="small muted mt8">支持 .xlsx / .xls / .csv，单文件 ≤ 20MB，最多 50,000 行</div>
+            </div>
+            <div id="upResult" class="hide mt16">
+              <div class="alert alert-ok mb12">✅ 解析完成：共读取 <b>4,206</b> 行，成功匹配 <b>3,974</b> 行，需人工确认 <b>232</b> 行。</div>
+              <table class="dtable">
+                <thead><tr><th>问题类型</th><th>数量</th><th>说明</th><th>处理</th></tr></thead>
+                <tbody>
+                  <tr><td><span class="tag tag-warn">型号无法识别</span></td><td>86</td><td>如 "STM32F103C8T6TR" 后缀不规范，系统已给出 3 个候选</td><td><a href="javascript:;" style="color:var(--brand)" onclick="demoTip('进入型号归一化人工确认界面')">去确认</a></td></tr>
+                  <tr><td><span class="tag tag-warn">缺少标盘数量</span></td><td>104</td><td>未填写 pcs/Reel，将按散装展示，影响买家信任度</td><td><a href="javascript:;" style="color:var(--brand)" onclick="demoTip('批量补填标盘数量')">批量补填</a></td></tr>
+                  <tr><td><span class="tag tag-red">价格异常偏离</span></td><td>28</td><td>低于全站均价 60% 以上，可能填错单位（元 vs 千个价）</td><td><a href="javascript:;" style="color:var(--brand)" onclick="demoTip('逐条核对异常价格')">去核对</a></td></tr>
+                  <tr><td><span class="tag tag-gray">与已有 SKU 重复</span></td><td>14</td><td>相同型号+批次+卖家，将合并库存数量</td><td><a href="javascript:;" style="color:var(--brand)" onclick="demoTip('确认合并')">确认合并</a></td></tr>
+                </tbody>
+              </table>
+              <div class="row gap12 mt16">
+                <button class="btn btn-primary" onclick="demoTip('3,974 条已上架，232 条进入待确认队列。')">✅ 上架 3,974 条无误数据</button>
+                <button class="btn btn-ghost" onclick="demoTip('导出异常明细.xlsx')">导出异常明细</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="manualForm">
+          <div class="panel-hd"><h3>单条手工录入</h3><span class="small muted">带 <span style="color:var(--red)">*</span> 为必填，直接影响搜索曝光</span></div>
+          <div class="panel-bd">
+            <div class="grid3">
+              <div class="field"><label>器件型号 MPN <span class="req">*</span></label><input placeholder="如 STM32F103C8T6"><div class="hint">系统会自动匹配原厂参数库</div></div>
+              <div class="field"><label>品牌厂家 <span class="req">*</span></label>
+                <select id="brandSel"><option>请选择…</option></select>
+                <div class="hint">选定后自动带出原厂官网链接</div></div>
+              <div class="field"><label>器件分类 <span class="req">*</span></label><select id="catSel"></select><div class="hint">影响买家分类导航能否找到你</div></div>
+            </div>
+            <div class="grid3">
+              <div class="field"><label>封装形式 <span class="req">*</span></label><input placeholder="LQFP-48 / 0603 / SOT-23"></div>
+              <div class="field"><label>标盘数量 <span class="req">*</span></label><input placeholder="2500pcs/Reel"><div class="hint">格式：数量 + 单位（Reel / Tray / Tube / Bag）</div></div>
+              <div class="field"><label>生产年份 / 批次 <span class="req">*</span></label><input placeholder="2024+ 或 2431（周批号）"><div class="hint">买家最关注的字段之一，务必真实</div></div>
+            </div>
+            <div class="grid3">
+              <div class="field"><label>可售库存（pcs）<span class="req">*</span></label><input type="number" placeholder="87500"></div>
+              <div class="field"><label>最小起订量 MOQ <span class="req">*</span></label><input type="number" placeholder="100"></div>
+              <div class="field"><label>品质状态 <span class="req">*</span></label>
+                <select><option>全新原装</option><option>原装库存料</option><option>库存呆料</option><option>原厂拆板料</option><option>散新</option></select>
+                <div class="hint">虚假申报将扣除信用分并冻结保证金</div></div>
+            </div>
+            <div class="field"><label>阶梯价格 <span class="req">*</span>（含 13% 增值税，不含运费）</label>
+              <table class="dtable" style="border:1px solid var(--line);border-radius:4px">
+                <thead><tr><th>起订数量</th><th>单价（¥）</th><th></th></tr></thead>
+                <tbody id="tierRows"></tbody>
+              </table>
+              <button class="btn btn-ghost btn-sm mt8" onclick="addTier()">+ 添加阶梯</button></div>
+            <div class="grid2">
+              <div class="field"><label>产品图片</label>
+                <div class="upzone" style="padding:20px" onclick="demoTip('上传实拍图（建议 3 张以上：整盘、标签、单颗特写）')">
+                  <div style="font-size:22px">📷</div><div class="small">上传实拍图 · 建议 ≥3 张</div>
+                  <div class="tiny muted mt8">带日期水印的实拍图可提升 2.3 倍询价率</div></div></div>
+              <div class="field"><label>来源凭证（平台内部存档，不对外公开）</label>
+                <div class="upzone" style="padding:20px" onclick="demoTip('上传原厂授权书 / 上游 Invoice / COC 报关单')">
+                  <div style="font-size:22px">📄</div><div class="small">授权书 / Invoice / COC</div>
+                  <div class="tiny muted mt8">上传凭证的 SKU 搜索权重提升 40%</div></div></div>
+            </div>
+            <div class="field"><label>备注说明</label><textarea rows="3" placeholder="如：原厂真空包装未拆封，可提供 COC，支持开 13% 专票，深圳同城可自提"></textarea></div>
+            <div class="alert alert-warn mb16">⚠️ <b>诚信承诺</b>：型号、批次、品质状态、库存数量虚假申报，一经买家举报核实，
+              首次扣 50 信用分并下架全部库存 7 天，二次冻结保证金并永久清退。</div>
+            <div class="row gap12">
+              <button class="btn btn-primary btn-lg" onclick="demoTip('库存已提交，审核通过后 10 分钟内上架。')">提交上架</button>
+              <button class="btn btn-ghost btn-lg" onclick="demoTip('已存为草稿')">存为草稿</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 库存管理 -->
+      <section id="p-stock" class="hide">
+        <div class="panel">
+          <div class="panel-hd"><h3>我的库存（3,842 条）</h3>
+            <div class="row gap8">
+              <button class="btn btn-ghost btn-sm" onclick="demoTip('批量调价：支持按比例、按固定值、按竞品跟价三种策略')">批量调价</button>
+              <button class="btn btn-ghost btn-sm" onclick="demoTip('导出 我的库存.xlsx')">导出</button>
+              <button class="btn btn-accent btn-sm" onclick="go(document.querySelector('[data-p=upload]'))">＋ 上传库存</button>
+            </div></div>
+          <div class="panel-bd" style="padding:0">
+            <table class="dtable">
+              <thead><tr><th>型号</th><th>品牌</th><th>标盘 / 年份</th><th>库存 / MOQ</th><th>首价</th><th>30天曝光</th><th>询价</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody id="stockRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 求购抢单 -->
+      <section id="p-rfq" class="hide">
+        <div class="alert alert-info mb16">🔔 系统按你的库存自动匹配求购单。<b>30 分钟内报价的成交率是 2 小时后报价的 4.1 倍</b>。</div>
+        <div class="panel">
+          <div class="panel-hd"><h3>匹配到我的求购单</h3><span class="tag tag-org">12 条待报价</span></div>
+          <div class="panel-bd" style="padding:0">
+            <table class="dtable">
+              <thead><tr><th>求购单号</th><th>型号</th><th>需求量</th><th>买家</th><th>发布时间</th><th>已报价数</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody id="rfqRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 订单 -->
+      <section id="p-order" class="hide">
+        <div class="statgrid mb16">
+          <div class="stat"><span>待发货</span><strong style="color:var(--warn)">6</strong><div class="delta muted small">2 单超时预警</div></div>
+          <div class="stat"><span>运输中</span><strong style="color:var(--brand)">14</strong><div class="delta muted small">物流正常</div></div>
+          <div class="stat"><span>待买家确认</span><strong>9</strong><div class="delta muted small">确认后 T+1 放款</div></div>
+          <div class="stat"><span>争议处理中</span><strong style="color:var(--red)">1</strong><div class="delta muted small">需 48h 内举证</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd"><h3>订单列表</h3></div>
+          <div class="panel-bd" style="padding:0">
+            <table class="dtable">
+              <thead><tr><th>订单号</th><th>型号 / 数量</th><th>金额</th><th>买家</th><th>支付方式</th><th>状态</th><th>下单时间</th><th>操作</th></tr></thead>
+              <tbody id="orderRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 资金 -->
+      <section id="p-money" class="hide">
+        <div class="statgrid mb16">
+          <div class="stat"><span>可提现余额</span><strong style="color:var(--ok)">¥428,600</strong><div class="delta muted small">T+1 到账</div></div>
+          <div class="stat"><span>托管中（在途）</span><strong>¥862,400</strong><div class="delta muted small">买家已付款，待确认收货</div></div>
+          <div class="stat"><span>本月佣金支出</span><strong>¥14,320</strong><div class="delta muted small">费率 1.2%（Lv.4）</div></div>
+          <div class="stat"><span>保证金</span><strong>¥100,000</strong><div class="delta muted small">未冻结</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="panel"><div class="panel-hd"><h3>结算规则</h3></div><div class="panel-bd col gap12 small" style="line-height:1.8">
+            <div><b>① 担保交易</b>：买家确认收货 或 签收满 7 天自动确认 → T+1 结算到卖家余额</div>
+            <div><b>② 账期交易</b>：需买家有平台授信额度，卖家可选是否接受；平台对账期订单收 0.5%/月 风控服务费</div>
+            <div><b>③ 保理垫资</b>（可选）：确认收货后立即到账 98%，剩余 2% 为资金成本，适合现金流紧张的贸易商</div>
+            <div><b>④ 提现</b>：对公账户，单笔 ≥ ¥1,000，每月前 5 笔免费</div>
+            <div class="alert alert-warn tiny">⚠️ 争议订单资金将被冻结，直至争议关闭。恶意拖延举证按买家诉求处理。</div>
+          </div></div>
+          <div class="panel"><div class="panel-hd"><h3>佣金费率阶梯</h3></div><div class="panel-bd" style="padding:0">
+            <table class="dtable">
+              <thead><tr><th>卖家等级</th><th>月成交额</th><th>佣金费率</th><th>其他权益</th></tr></thead>
+              <tbody>
+                <tr><td>Lv.1 新入驻</td><td>&lt; 10 万</td><td><b>0%</b>（前 12 个月）</td><td>基础曝光</td></tr>
+                <tr><td>Lv.2</td><td>10 - 50 万</td><td>2.0%</td><td>搜索加权</td></tr>
+                <tr><td>Lv.3</td><td>50 - 200 万</td><td>1.6%</td><td>+ 求购优先推送</td></tr>
+                <tr style="background:var(--brand-l)"><td><b>Lv.4（当前）</b></td><td>200 - 500 万</td><td><b>1.2%</b></td><td>+ 品牌旗舰店 + 保理</td></tr>
+                <tr><td>Lv.5</td><td>&gt; 500 万</td><td>0.8%</td><td>+ 专属客户经理 + API 高频</td></tr>
+              </tbody></table>
+          </div></div>
+        </div>
+      </section>
+
+      <!-- 资质 -->
+      <section id="p-cert" class="hide">
+        <div class="panel">
+          <div class="panel-hd"><h3>企业资质与认证</h3><span class="tag tag-ok">已认证 · 有效期至 2027-08-06</span></div>
+          <div class="panel-bd">
+            <table class="spec-table">
+              <tr><th>企业名称</th><td>深圳市芯联电子有限公司 <span class="tag tag-ok">✓ 工商已核验</span></td></tr>
+              <tr><th>统一社会信用代码</th><td class="mono">91440300MA5X****XK <span class="tag tag-ok">✓ 三证合一</span></td></tr>
+              <tr><th>法定代表人</th><td>陈** <span class="tag tag-ok">✓ 人脸实名核验</span></td></tr>
+              <tr><th>注册资本 / 成立年限</th><td>¥1,000 万 · 11 年</td></tr>
+              <tr><th>对公账户</th><td class="mono">招商银行深圳分行 ****6688 <span class="tag tag-ok">✓ 打款验证通过</span></td></tr>
+              <tr><th>卖家类型</th><td><span class="tag tag-ok">授权代理商</span> 已上传 ST / TI / Winbond 授权书</td></tr>
+              <tr><th>缴纳保证金</th><td><b>¥100,000</b> <span class="muted small">（决定可上架 SKU 上限与争议赔付能力）</span></td></tr>
+              <tr><th>信用等级</th><td><b>Lv.4</b> · 信用分 872 · 近 12 月零违规</td></tr>
+            </table>
+            <div class="alert alert-info mt16">💡 <b>为什么要缴保证金？</b>这是平台"公平交易保证"的资金基础。发生品质争议且卖家举证失败时，
+              平台直接从保证金扣款赔付买家，无需卖家配合。保证金越高，可上架 SKU 越多、搜索权重越高。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- API -->
+      <section id="p-api" class="hide">
+        <div class="panel">
+          <div class="panel-hd"><h3>ERP / API 对接</h3><span class="tag tag-blue">推荐给日均改动 &gt; 500 SKU 的卖家</span></div>
+          <div class="panel-bd">
+            <div class="alert alert-ok mb16">✅ 对接后：库存实时同步、售罄自动下架、订单自动回流 ERP、<b>彻底解决"卖超"导致的差评</b>。</div>
+            <table class="spec-table">
+              <tr><th>接口地址</th><td class="mono">https://api.ic-hub.cn/v1/</td></tr>
+              <tr><th>鉴权方式</th><td class="mono">HMAC-SHA256 签名 + AppKey / AppSecret</td></tr>
+              <tr><th>库存推送</th><td class="mono">POST /inventory/batch_upsert &nbsp;<span class="muted">单次 ≤ 1000 条，QPS ≤ 20</span></td></tr>
+              <tr><th>库存扣减</th><td class="mono">POST /inventory/deduct &nbsp;<span class="muted">订单锁库回调</span></td></tr>
+              <tr><th>订单拉取</th><td class="mono">GET /orders?status=paid&since=…</td></tr>
+              <tr><th>发货回传</th><td class="mono">POST /orders/{id}/ship &nbsp;<span class="muted">运单号 + 物流公司</span></td></tr>
+              <tr><th>已适配 ERP</th><td>金蝶 K3/云星空 · 用友 U8/YonSuite · SAP B1 · 管家婆 · 速达 · 自研（提供 SDK）</td></tr>
+            </table>
+            <div class="row gap12 mt16">
+              <button class="btn btn-primary" onclick="demoTip('AppKey: ak_live_8f2c***\nAppSecret: 请在安全环境查看')">生成 AppKey</button>
+              <button class="btn btn-ghost" onclick="demoTip('打开开发者文档')">查看完整文档</button>
+              <button class="btn btn-ghost" onclick="demoTip('已提交对接需求，技术支持 1 个工作日内联系。')">申请技术协助对接</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+renderHeader('seller.html', {role:'卖家：深圳芯联电子 Lv.4'});
+renderFooter();
+renderDemoNote('卖家中心 · 左侧菜单可切换');
+
+const PAGES = ['dash','upload','stock','rfq','order','money','cert','api'];
+function go(el){
+  document.querySelectorAll('.cmenu a').forEach(a=>a.classList.remove('on'));
+  el.classList.add('on');
+  PAGES.forEach(p=>document.getElementById('p-'+p).classList.add('hide'));
+  document.getElementById('p-'+el.dataset.p).classList.remove('hide');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+if(qs('tab')){ const t = document.querySelector(`[data-p=${qs('tab')}]`); if(t) go(t); }
+
+// 漏斗
+const F = [['曝光量',624000,100],['商品点击',48600,7.8],['发起询价',3790,0.61],['成交订单',412,0.066]];
+document.getElementById('funnel').innerHTML = F.map((f,i)=>`
+  <div class="mb12">
+    <div class="row between small mb8"><b>${f[0]}</b><span class="mono">${fmt.qty(f[1])} <span class="muted">(${f[2]}%)</span></span></div>
+    <div class="progress" style="height:22px;border-radius:4px">
+      <i style="width:${[100,62,34,16][i]}%;background:${['#1352A2','#2a7ad6','#FF6B00','#12a150'][i]};display:flex;align-items:center;padding-left:9px;color:#fff;font-size:11px">${['','','',''][i]}</i>
+    </div>
+  </div>`).join('') +
+  `<div class="alert alert-warn tiny">📉 询价 → 成交转化 10.9%，低于平台均值 14.2%。主因：<b>平均首次响应 47 分钟</b>（平台优秀卖家 ≤ 15 分钟）。建议开启手机端消息推送。</div>`;
+
+// 滞销
+document.getElementById('deadStock').innerHTML = [
+  ['MMBT3904LT1G','2023+',1250000,186,'库龄 428 天'],
+  ['SS8050','2021+',660000,42,'库龄 612 天'],
+  ['B57861S0103F040','2024+',18000,8,'库龄 302 天']
+].map(d=>`<div style="border:1px solid var(--line-2);border-radius:4px;padding:10px">
+  <div class="row between center"><span class="mono bold" style="font-size:12.5px">${d[0]}</span><span class="tag tag-red">${d[4]}</span></div>
+  <div class="tiny muted mt8">库存 ${fmt.qty(d[2])} · 30天曝光仅 ${d[3]} 次 · 批次 ${d[1]}</div>
+  <div class="row gap4 mt8">
+    <button class="btn btn-ghost btn-sm" onclick="demoTip('已加入「工厂呆料清仓」专区，享受首页流量倾斜。')">加入清仓专区</button>
+    <button class="btn btn-ghost btn-sm" onclick="demoTip('已下调 15%，预计曝光提升 3.2 倍。')">一键降价 15%</button>
+  </div></div>`).join('');
+
+// 调价建议
+document.getElementById('priceAdvice').innerHTML = PRODUCTS.slice(0,5).map((p,i)=>{
+  const avg = p.tiers[0].p * (1 + (i%3-1)*0.08);
+  const hi = p.tiers[0].p > avg;
+  return `<tr>
+    <td class="mono bold" style="color:var(--brand)">${p.mpn}</td>
+    <td class="mono">${fmt.price(p.tiers[0].p)}</td>
+    <td class="mono muted">${fmt.price(avg)}</td>
+    <td>${hi?'<span class="tag tag-red">偏高 · 第 '+(6+i)+' 位</span>':'<span class="tag tag-ok">有竞争力 · 第 '+(1+i)+' 位</span>'}</td>
+    <td class="small">${hi?'建议下调 '+((p.tiers[0].p/avg-1)*100).toFixed(0)+'% 进入前 3':'保持现价，可小幅上调试探'}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="demoTip('已应用调价建议')">应用</button></td></tr>`;
+}).join('');
+
+// 库存表
+document.getElementById('stockRows').innerHTML = PRODUCTS.map((p,i)=>`<tr>
+  <td class="mono bold" style="color:var(--brand)">${p.mpn}</td>
+  <td>${fmt.brandCn(p.brand)}</td>
+  <td><div class="mono tiny">${p.packing}</div><div class="tiny muted">${p.dateCode}</div></td>
+  <td><div class="mono">${fmt.qty(p.qty)}</div><div class="tiny muted">MOQ ${fmt.qty(p.moq)}</div></td>
+  <td class="mono" style="color:var(--red)">${fmt.price(p.tiers[0].p)}</td>
+  <td class="mono">${fmt.qty(320 + i*186)}</td>
+  <td class="mono">${(i*3)%17}</td>
+  <td>${i%7===3?'<span class="tag tag-warn">审核中</span>':i%11===5?'<span class="tag tag-gray">已下架</span>':'<span class="tag tag-ok">在售</span>'}</td>
+  <td><a href="javascript:;" style="color:var(--brand)" onclick="demoTip('编辑该 SKU')">编辑</a> ·
+      <a href="javascript:;" style="color:var(--brand)" onclick="demoTip('已下架')">下架</a></td></tr>`).join('');
+
+// RFQ
+document.getElementById('rfqRows').innerHTML = INQUIRIES.concat(INQUIRIES.slice(0,3)).map((r,i)=>`<tr>
+  <td class="mono tiny">${r.id}</td>
+  <td class="mono bold" style="color:var(--brand)">${r.mpn}</td>
+  <td class="mono">${fmt.qty(r.qty)} pcs</td>
+  <td>${r.buyer}<div class="tiny muted">⭐ 4.${7+i%3} · 累计采购 ${fmt.qty(12+i*7)} 万</div></td>
+  <td class="tiny muted">${r.time}</td>
+  <td class="mono">${r.quotes}</td>
+  <td><span class="tag ${r.status==='待报价'?'tag-org':r.status==='已成交'?'tag-ok':r.status==='已关闭'?'tag-gray':'tag-blue'}">${r.status}</span></td>
+  <td>${r.status==='待报价'
+      ? '<button class="btn btn-accent btn-sm" onclick="demoTip(\'报价面板：填写单价、有效期、货期、是否接受担保交易\')">立即报价</button>'
+      : '<a href="javascript:;" style="color:var(--brand)" onclick="demoTip(\'查看报价详情\')">查看</a>'}</td></tr>`).join('');
+
+// 订单
+document.getElementById('orderRows').innerHTML = ORDERS.map(o=>`<tr>
+  <td class="mono tiny">${o.id}</td>
+  <td><span class="mono bold" style="color:var(--brand)">${o.mpn}</span><div class="tiny muted">${fmt.qty(o.qty)} pcs</div></td>
+  <td class="mono bold">¥${fmt.qty(o.amt)}</td>
+  <td>${o.cp}</td>
+  <td><span class="tag ${o.pay==='平台担保'?'tag-ok':'tag-warn'}">${o.pay}</span></td>
+  <td><span class="tag ${o.statusTag}">${o.status}</span></td>
+  <td class="tiny muted">${o.time}</td>
+  <td>${o.status==='待发货'?'<button class="btn btn-primary btn-sm" onclick="demoTip(\'填写运单号发货\')">去发货</button>'
+     : o.status==='质保申诉中'?'<button class="btn btn-accent btn-sm" onclick="demoTip(\'上传批次照片、COC、检测报告等举证材料，48 小时内有效\')">去举证</button>'
+     : '<a href="javascript:;" style="color:var(--brand)" onclick="demoTip(\'订单详情\')">详情</a>'}</td></tr>`).join('');
+
+// 分类下拉
+document.getElementById('catSel').innerHTML = '<option>请选择…</option>' +
+  CATEGORIES.map(c=>`<optgroup label="${c.name}">${c.subs.map(s=>`<option>${s}</option>`).join('')}</optgroup>`).join('');
+// 品牌下拉（带原厂官网）
+document.getElementById('brandSel').innerHTML = '<option>请选择…</option>' +
+  Object.keys(BRANDS).map(b=>`<option value="${b}">${fmt.brandCn(b)}（${b}）</option>`).join('');
+
+// 阶梯价
+let tiers = [[100,''],[1000,''],[10000,'']];
+function drawTiers(){
+  document.getElementById('tierRows').innerHTML = tiers.map((t,i)=>`<tr>
+    <td><input value="${t[0]}" style="width:120px;border:1px solid var(--line);border-radius:3px;padding:4px 8px"></td>
+    <td><input placeholder="0.0000" style="width:120px;border:1px solid var(--line);border-radius:3px;padding:4px 8px"></td>
+    <td><a href="javascript:;" style="color:var(--red)" onclick="tiers.splice(${i},1);drawTiers()">删除</a></td></tr>`).join('');
+}
+function addTier(){ tiers.push([tiers.length?tiers[tiers.length-1][0]*5:100,'']); drawTiers(); }
+drawTiers();
+
+function mockUpload(){
+  const z = document.querySelector('#p-upload .upzone');
+  z.innerHTML = '<div class="ico">⏳</div><b>正在解析 库存清单_202608.xlsx …</b><div class="progress mt12" style="max-width:340px;margin:12px auto 0"><i id="upBar" style="width:0%"></i></div>';
+  let w = 0;
+  const t = setInterval(()=>{
+    w += 8; document.getElementById('upBar').style.width = w + '%';
+    if(w >= 100){ clearInterval(t);
+      z.innerHTML = '<div class="ico">✅</div><b>库存清单_202608.xlsx 解析完成</b><div class="small muted mt8">4,206 行 · 用时 3.2 秒</div>';
+      document.getElementById('upResult').classList.remove('hide');
+      document.getElementById('upResult').scrollIntoView({behavior:'smooth'});
+    }
+  }, 110);
+}
+</script>
+</body>
+</html>

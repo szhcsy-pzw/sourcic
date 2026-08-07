@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>现货库存检索 · 芯汇通 SourcIC</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+
+<div class="wrap">
+  <div class="crumb"><a href="index.html">首页</a> › <a href="search.html">现货库存</a> › <span id="crumbNow">全部器件</span></div>
+
+  <!-- 筛选区 -->
+  <div class="filters">
+    <div class="frow"><div class="fk">器件分类</div><div class="fv" id="fCat"></div></div>
+    <div class="frow"><div class="fk">品牌厂家</div><div class="fv" id="fBrand"></div></div>
+    <div class="frow"><div class="fk">封装形式</div><div class="fv" id="fPkg"></div></div>
+    <div class="frow"><div class="fk">生产年份</div><div class="fv" id="fYear"></div></div>
+    <div class="frow"><div class="fk">卖家类型</div><div class="fv" id="fSeller"></div></div>
+    <div class="frow"><div class="fk">品质状态</div><div class="fv" id="fQuality"></div></div>
+    <div class="frow"><div class="fk">高级筛选</div><div class="fv" style="gap:14px">
+      <label class="row center gap4" style="cursor:pointer"><input type="checkbox" id="cbStock" onchange="applyFilter()"> 库存 ≥ 10,000</label>
+      <label class="row center gap4" style="cursor:pointer"><input type="checkbox" id="cbMoq" onchange="applyFilter()"> 起订量 ≤ 1,000</label>
+      <label class="row center gap4" style="cursor:pointer"><input type="checkbox" id="cbRohs" onchange="applyFilter()"> 仅 RoHS 合规</label>
+      <label class="row center gap4" style="cursor:pointer"><input type="checkbox" id="cbVer" onchange="applyFilter()"> 仅认证卖家</label>
+      <span class="muted">|</span>
+      <span>价格区间</span>
+      <input type="number" id="pMin" placeholder="最低" style="width:74px;border:1px solid var(--line);border-radius:3px;padding:2px 7px" oninput="applyFilter()">
+      <span>—</span>
+      <input type="number" id="pMax" placeholder="最高" style="width:74px;border:1px solid var(--line);border-radius:3px;padding:2px 7px" oninput="applyFilter()">
+      <button class="btn btn-ghost btn-sm" onclick="resetFilter()">清空条件</button>
+    </div></div>
+  </div>
+
+  <!-- 卖家信息横幅（?seller= 时显示） -->
+  <div id="sellerBanner" class="hide" style="background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px"></div>
+
+  <!-- 工具条 -->
+  <div class="toolbar">
+    <div class="row center gap16">
+      <span>共找到 <b id="cnt" style="color:var(--accent)">0</b> 条现货库存</span>
+      <span class="muted small" id="activeTags"></span>
+    </div>
+    <div class="row center gap16">
+      <div class="sorts">
+        <a href="javascript:;" class="on" data-sort="default" onclick="setSort(this)">综合排序</a>
+        <a href="javascript:;" data-sort="price" onclick="setSort(this)">价格 ↑</a>
+        <a href="javascript:;" data-sort="qty" onclick="setSort(this)">库存 ↓</a>
+        <a href="javascript:;" data-sort="year" onclick="setSort(this)">年份 ↓</a>
+        <a href="javascript:;" data-sort="moq" onclick="setSort(this)">起订量 ↑</a>
+      </div>
+      <span class="muted">|</span>
+      <a href="buyer.html?tab=bom" class="small" style="color:var(--brand)">📄 批量 BOM 匹配</a>
+    </div>
+  </div>
+
+  <!-- 结果表 -->
+  <table class="ltable">
+    <thead><tr>
+      <th style="width:80px">图片</th>
+      <th>型号 / 参数</th>
+      <th style="width:130px">品牌厂家</th>
+      <th style="width:118px">标盘 / 年份</th>
+      <th style="width:104px">库存 / 起订</th>
+      <th style="width:180px">阶梯价（含税）</th>
+      <th style="width:150px">卖家</th>
+      <th style="width:112px">操作</th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <div class="pager">
+    <a href="javascript:;">‹ 上一页</a>
+    <a href="javascript:;" class="on">1</a><a href="javascript:;">2</a><a href="javascript:;">3</a>
+    <a href="javascript:;">…</a><a href="javascript:;">128</a><a href="javascript:;">下一页 ›</a>
+  </div>
+
+  <div class="ribbon mb24">
+    ⚠️ <b>找不到想要的型号？</b> 平台有 3,417 家卖家，其中大量库存尚未上架。
+    <a href="buyer.html?tab=rfq" class="btn btn-accent btn-sm" style="margin-left:auto">发布求购单，让卖家来找你 →</a>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const kw = qs('kw') || '';
+const sellerFilter = qs('seller') || '';
+renderHeader('search.html', {kw});
+renderFooter();
+renderDemoNote('库存列表 · 筛选/排序可实际操作');
+
+// 卖家筛选横幅
+if(sellerFilter && SELLERS[sellerFilter]){
+  const sv = SELLERS[sellerFilter];
+  const svCount = PRODUCTS.filter(p=>p.seller===sellerFilter).length;
+  document.getElementById('sellerBanner').classList.remove('hide');
+  document.getElementById('sellerBanner').innerHTML = `
+    <div style="width:48px;height:48px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0">${sv.name[0]}</div>
+    <div class="grow">
+      <div style="display:flex;align-items:center;gap:8px">
+        <b style="font-size:15px">${sv.name}</b>
+        <span class="tag ${sv.type==='授权代理商'?'tag-ok':sv.type==='工厂呆料'?'tag-org':'tag-blue'}">${sv.type}</span>
+        <span class="tag tag-line">✓ 三证已核验</span>
+        <span class="tag tag-line">${sv.bond}</span>
+      </div>
+      <div class="small muted mt8">${sv.city} · 经营 ${sv.years} 年 · 综合评分 ⭐${sv.rating} · 累计成交 ${fmt.qty(sv.deals)} 单 · 响应时长 ${sv.resp} · 在售 SKU ${svCount}</div>
+    </div>
+    <a href="index.html" class="btn btn-ghost btn-sm">← 返回全部</a>`;
+}
+
+let F = { cat:'', brand:'', pkg:'', year:'', stype:'', quality:'', sort:'default' };
+if(qs('cat')) F.cat = qs('cat');
+
+const uniq = a => [...new Set(a)];
+const YEARS = ['2025+','2024+','2023+','2021+','2019+'];
+
+function chips(elId, key, list, labelFn){
+  document.getElementById(elId).innerHTML =
+    `<a href="javascript:;" class="${F[key]===''?'on':''}" onclick="pick('${key}','')">全部</a>` +
+    list.map(v=>`<a href="javascript:;" class="${F[key]===v?'on':''}" onclick="pick('${key}','${v}')">${labelFn?labelFn(v):v}</a>`).join('');
+}
+function pick(key, val){ F[key] = val; renderChips(); applyFilter(); }
+function setSort(el){
+  document.querySelectorAll('.sorts a').forEach(a=>a.classList.remove('on'));
+  el.classList.add('on'); F.sort = el.dataset.sort; applyFilter();
+}
+function resetFilter(){
+  F = { cat:'', brand:'', pkg:'', year:'', stype:'', quality:'', sort:F.sort };
+  ['cbStock','cbMoq','cbRohs','cbVer'].forEach(i=>document.getElementById(i).checked=false);
+  document.getElementById('pMin').value=''; document.getElementById('pMax').value='';
+  renderChips(); applyFilter();
+}
+function renderChips(){
+  chips('fCat','cat', CATEGORIES.map(c=>c.name));
+  chips('fBrand','brand', uniq(PRODUCTS.map(p=>p.brand)), b=>fmt.brandCn(b));
+  chips('fPkg','pkg', uniq(PRODUCTS.map(p=>p.pkg)));
+  chips('fYear','year', YEARS);
+  chips('fSeller','stype', uniq(Object.values(SELLERS).map(s=>s.type)));
+  chips('fQuality','quality', uniq(PRODUCTS.map(p=>p.quality)));
+}
+
+function applyFilter(){
+  const pMin = parseFloat(document.getElementById('pMin').value);
+  const pMax = parseFloat(document.getElementById('pMax').value);
+  const onlyStock = document.getElementById('cbStock').checked;
+  const onlyMoq   = document.getElementById('cbMoq').checked;
+  const onlyRohs  = document.getElementById('cbRohs').checked;
+  const onlyVer   = document.getElementById('cbVer').checked;
+
+  let list = PRODUCTS.filter(p=>{
+    const s = SELLERS[p.seller];
+    if(sellerFilter && p.seller !== sellerFilter) return false;
+    if(kw && !(p.mpn+p.desc+p.brand+p.sub).toLowerCase().includes(kw.toLowerCase())) return false;
+    if(F.cat && p.cat !== F.cat) return false;
+    if(F.brand && p.brand !== F.brand) return false;
+    if(F.pkg && p.pkg !== F.pkg) return false;
+    if(F.year && p.dateCode !== F.year) return false;
+    if(F.stype && s.type !== F.stype) return false;
+    if(F.quality && p.quality !== F.quality) return false;
+    if(onlyStock && p.qty < 10000) return false;
+    if(onlyMoq && p.moq > 1000) return false;
+    if(onlyRohs && !p.rohs) return false;
+    if(onlyVer && !s.verified) return false;
+    const price = p.tiers[0].p;
+    if(!isNaN(pMin) && price < pMin) return false;
+    if(!isNaN(pMax) && price > pMax) return false;
+    return true;
+  });
+
+  const sorters = {
+    price:(a,b)=>a.tiers[0].p-b.tiers[0].p,
+    qty:(a,b)=>b.qty-a.qty,
+    year:(a,b)=>b.dateCode.localeCompare(a.dateCode),
+    moq:(a,b)=>a.moq-b.moq,
+    default:(a,b)=>0
+  };
+  list.sort(sorters[F.sort]);
+
+  document.getElementById('cnt').textContent = list.length;
+  const tags = [kw?`关键词「${kw}」`:'', F.cat, F.brand?fmt.brandCn(F.brand):'', F.pkg, F.year, F.stype, F.quality].filter(Boolean);
+  document.getElementById('activeTags').innerHTML = tags.length ? '已选：' + tags.map(t=>`<span class="tag tag-blue">${t}</span>`).join(' ') : '';
+  let crumbText = '全部器件';
+  if(sellerFilter && SELLERS[sellerFilter]) crumbText = SELLERS[sellerFilter].name + ' · 全部库存';
+  else if(F.cat) crumbText = F.cat;
+  else if(kw) crumbText = '搜索：'+kw;
+  document.getElementById('crumbNow').textContent = crumbText;
+
+  document.getElementById('rows').innerHTML = list.length ? list.map(p=>{
+    const s = SELLERS[p.seller];
+    return `<tr>
+      <td><div class="li-img">${compSVG(p.icon, 56)}</div></td>
+      <td>
+        <a class="li-mpn" href="product.html?id=${p.id}">${p.mpn}</a>
+        <div class="li-attr">${p.desc}</div>
+        <div class="li-attr">
+          <b>封装</b> ${p.pkg} &nbsp;·&nbsp; <b>分类</b> ${p.sub} &nbsp;·&nbsp;
+          ${p.rohs?'<span class="tag tag-ok">RoHS</span>':''}
+          ${p.quality==='全新原装'?'<span class="tag tag-ok">全新原装</span>':'<span class="tag tag-warn">'+p.quality+'</span>'}
+        </div>
+      </td>
+      <td>
+        <div class="bold" style="font-size:12.5px">${fmt.brandCn(p.brand)}</div>
+        <div class="tiny muted">${p.brand}</div>
+        <a class="tiny" style="color:var(--brand)" target="_blank" href="${fmt.brandUrl(p.brand)}">原厂官网 ↗</a>
+      </td>
+      <td>
+        <div class="mono" style="font-size:12.5px">${p.packing}</div>
+        <div class="tiny muted mt8">批次年份 <b style="color:var(--ink-2)">${p.dateCode}</b></div>
+      </td>
+      <td>
+        <div class="mono bold" style="font-size:13px">${fmt.qty(p.qty)}</div>
+        <div class="tiny muted">MOQ ${fmt.qty(p.moq)}</div>
+      </td>
+      <td><div class="tiers">${p.tiers.map(t=>`<div><span class="tq">${fmt.qty(t.q)}+</span><span class="tp">${fmt.price(t.p)}</span></div>`).join('')}</div></td>
+      <td>
+        <div style="font-size:12px;line-height:1.5">${s.name}</div>
+        <div class="tiny mt8"><span class="tag ${s.type==='授权代理商'?'tag-ok':s.type==='工厂呆料'?'tag-org':'tag-blue'}">${s.type}</span></div>
+        <div class="tiny muted mt8">⭐ ${s.rating} · ${s.city}</div>
+      </td>
+      <td>
+        <a href="product.html?id=${p.id}" class="btn btn-primary btn-sm btn-block">立即询价</a>
+        <button class="btn btn-ghost btn-sm btn-block mt8" onclick="demoTip('已加入对比清单，可在 BOM 配单页批量比价。')">加入对比</button>
+      </td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="8" style="text-align:center;padding:50px;color:var(--muted)">
+      没有匹配的库存。<a href="buyer.html?tab=rfq" style="color:var(--brand)">发布求购单 →</a> 让 3,417 家卖家主动报价</td></tr>`;
+}
+
+renderChips(); applyFilter();
+</script>
+</body>
+</html>

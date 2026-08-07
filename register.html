@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>注册入驻 · 芯汇通 SourcIC</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+
+<div class="wrap mt24">
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start">
+
+    <div class="panel">
+      <div class="panel-hd"><h3>注册入驻</h3><span class="small muted">已有账号？<a href="javascript:;" style="color:var(--brand)" onclick="demoTip('登录页')">直接登录 →</a></span></div>
+      <div class="panel-bd">
+
+        <div class="alert alert-info mb16">
+          💡 <b>平台只服务企业用户</b>（个体工商户可）。个人账号无法交易——这是防止炒货、串货和"皮包公司"的第一道门槛。
+        </div>
+
+        <!-- 角色选择 -->
+        <div class="roletabs">
+          <div class="roletab on" id="rBuyer" onclick="setRole('buyer')">
+            <b>🛒 我是买家（采购方）</b>
+            <span>EMS 代工厂 / 方案公司 / 整机厂 / 研发团队<br>免费注册，无任何费用，注册即可询价下单</span>
+          </div>
+          <div class="roletab" id="rSeller" onclick="setRole('seller')">
+            <b>🏭 我是卖家（供货方）</b>
+            <span>授权代理商 / 独立贸易商 / 工厂呆料 / 原厂直营<br>需企业认证 + 缴纳保证金，成交才收佣金</span>
+          </div>
+        </div>
+        <div class="tiny muted mb24" style="text-align:center">
+          一个企业账号可同时开通买卖双身份（很多贸易商既买也卖）——注册后在设置里一键开通即可。
+        </div>
+
+        <!-- 步骤条 -->
+        <div class="steps mb24" id="stepBar"></div>
+
+        <!-- 通用信息 -->
+        <div class="panel" style="border:none;background:#fafbfd" >
+          <div class="panel-bd">
+            <h4 class="mb16" style="font-size:15px">① 账号信息</h4>
+            <div class="grid2">
+              <div class="field"><label>手机号 <span class="req">*</span></label>
+                <div class="row gap8"><input placeholder="11 位手机号"><button class="btn btn-ghost nowrap" onclick="demoTip('验证码已发送')">获取验证码</button></div></div>
+              <div class="field"><label>短信验证码 <span class="req">*</span></label><input placeholder="6 位数字"></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label>登录密码 <span class="req">*</span></label><input type="password" placeholder="8-20 位，含字母与数字"></div>
+              <div class="field"><label>确认密码 <span class="req">*</span></label><input type="password"></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label>企业邮箱</label><input placeholder="用于接收订单通知与对账单"><div class="hint">建议使用企业域名邮箱，可提升认证通过率</div></div>
+              <div class="field"><label>邀请码 / 推荐人</label><input placeholder="选填"></div>
+            </div>
+
+            <h4 class="mb16 mt24" style="font-size:15px">② 企业认证（必填 · 决定能否交易）</h4>
+            <div class="grid2">
+              <div class="field"><label>企业名称 <span class="req">*</span></label><input placeholder="与营业执照完全一致"><div class="hint">系统自动对接工商数据核验</div></div>
+              <div class="field"><label>统一社会信用代码 <span class="req">*</span></label><input placeholder="18 位"></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label>法定代表人姓名 <span class="req">*</span></label><input></div>
+              <div class="field"><label>法人身份证号 <span class="req">*</span></label><input placeholder="用于人脸实名核验"></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label>营业执照扫描件 <span class="req">*</span></label>
+                <div class="upzone" style="padding:18px" onclick="demoTip('上传营业执照（支持 OCR 自动识别填充）')">
+                  <div style="font-size:20px">📄</div><div class="small">上传营业执照</div><div class="tiny muted mt8">支持 OCR 自动识别</div></div></div>
+              <div class="field"><label>对公银行账户 <span class="req">*</span></label>
+                <input placeholder="开户行 + 账号"><div class="hint">平台将随机打款 ≤1 元验证，需回填金额</div></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label>企业所在地 <span class="req">*</span></label>
+                <select><option>广东省 / 深圳市</option><option>广东省 / 东莞市</option><option>江苏省 / 苏州市</option><option>上海市</option><option>浙江省 / 杭州市</option><option>其他</option></select></div>
+              <div class="field"><label>联系人 / 职位 <span class="req">*</span></label><input placeholder="张三 / 采购经理"></div>
+            </div>
+
+            <!-- 买家专属 -->
+            <div id="buyerExtra">
+              <h4 class="mb16 mt24" style="font-size:15px">③ 采购画像（选填，但强烈建议填）</h4>
+              <div class="alert alert-info mb16">填写后系统会精准推荐符合你偏好的库存，卖家也会优先响应你的询价。</div>
+              <div class="grid3">
+                <div class="field"><label>企业类型</label><select><option>EMS / PCBA 代工</option><option>方案公司 / IDH</option><option>整机品牌厂</option><option>科研院所 / 高校</option><option>贸易商（也做采购）</option></select></div>
+                <div class="field"><label>年采购规模</label><select><option>&lt; 100 万</option><option>100 - 500 万</option><option>500 - 2000 万</option><option>&gt; 2000 万</option></select></div>
+                <div class="field"><label>主要采购品类</label><select><option>MCU / 处理器</option><option>被动元件</option><option>电源管理</option><option>连接器</option><option>多品类混采</option></select></div>
+              </div>
+              <div class="grid3">
+                <div class="field"><label>品质底线</label><select><option>仅接受全新原装</option><option>可接受原装库存料</option><option>可接受拆板料（价格优先）</option></select></div>
+                <div class="field"><label>批次年份要求</label><select><option>不限</option><option>2024 年及以后</option><option>2022 年及以后</option></select></div>
+                <div class="field"><label>是否需要账期</label><select><option>暂不需要</option><option>需要 30 天账期</option><option>需要 60 天账期</option></select></div>
+              </div>
+            </div>
+
+            <!-- 卖家专属 -->
+            <div id="sellerExtra" class="hide">
+              <h4 class="mb16 mt24" style="font-size:15px">③ 供货资质（卖家必填 · 决定信用等级与曝光权重）</h4>
+              <div class="grid3">
+                <div class="field"><label>卖家类型 <span class="req">*</span></label>
+                  <select id="stype" onchange="onStype()">
+                    <option>授权代理商</option><option>独立贸易商</option><option>工厂呆料处理</option><option>原厂直营</option></select></div>
+                <div class="field"><label>经营年限 <span class="req">*</span></label><select><option>1-3 年</option><option>3-5 年</option><option>5-10 年</option><option>10 年以上</option></select></div>
+                <div class="field"><label>预计上架 SKU 数 <span class="req">*</span></label><select><option>&lt; 500</option><option>500 - 5000</option><option>5000 - 50000</option><option>&gt; 50000</option></select></div>
+              </div>
+              <div class="field" id="authBox"><label>原厂授权书 <span class="req">*</span></label>
+                <div class="upzone" style="padding:18px" onclick="demoTip('上传原厂授权书（可多张）。平台会向原厂或其中国区代理进行抽样复核。')">
+                  <div style="font-size:20px">🏅</div><div class="small">上传原厂授权书（可多张）</div>
+                  <div class="tiny muted mt8">授权代理商专属标识，搜索权重 +40%，买家信任度显著提升</div></div></div>
+              <div class="field"><label>库存来源说明 <span class="req">*</span></label>
+                <textarea rows="2" placeholder="如：本公司为 ST 中国区二级代理，库存全部来自 XX 一级代理，可提供每批次 Invoice 与 COC"></textarea>
+                <div class="hint">来源不清晰的卖家将被限制上架量，且无法进入「授权代理专区」</div></div>
+              <div class="field"><label>保证金档位 <span class="req">*</span></label>
+                <div class="row gap8 wrapf" id="bondPick"></div>
+                <div class="hint">保证金是"公平交易保证"的资金基础。发生品质争议且举证失败时，平台直接扣款赔付买家。</div></div>
+              <div class="alert alert-warn mt16">
+                ⚠️ <b>卖家诚信承诺</b>：上架商品的型号、品牌、批次年份、标盘数量、品质状态、库存数量必须真实。
+                虚假申报首次扣 50 信用分 + 全店下架 7 天，二次冻结保证金并永久清退，且记入行业黑名单。
+              </div>
+            </div>
+
+            <div class="field mt24">
+              <label class="row center gap8" style="cursor:pointer;font-weight:400">
+                <input type="checkbox" id="agree" checked>
+                <span>我已阅读并同意 <a href="javascript:;" style="color:var(--brand)" onclick="demoTip('用户协议')">《平台用户协议》</a>
+                  <a href="trust.html" style="color:var(--brand)">《公平交易保障规则》</a>
+                  <a href="javascript:;" style="color:var(--brand)" onclick="demoTip('隐私政策')">《隐私政策》</a></span></label>
+            </div>
+
+            <button class="btn btn-accent btn-lg btn-block" id="submitBtn" onclick="submitReg()">提交注册 · 免费</button>
+            <div class="tiny muted mt12" style="text-align:center" id="afterHint"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧 -->
+    <div class="col gap16">
+      <div class="panel">
+        <div class="panel-hd"><h3 style="font-size:14px">认证审核流程</h3></div>
+        <div class="panel-bd">
+          <ul class="tl">
+            <li class="done"><b>提交资料</b><span>5 分钟填完</span></li>
+            <li class="now"><b>工商数据自动核验</b><span>实时（≈10 秒）</span></li>
+            <li><b>法人人脸实名</b><span>手机扫码，1 分钟</span></li>
+            <li><b>对公账户打款验证</b><span>1 个工作日内</span></li>
+            <li><b>人工资质复核</b><span>买家：≤2 小时<br>卖家：≤1 个工作日</span></li>
+            <li><b>开通交易权限</b><span>卖家还需缴纳保证金</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel" id="benefitBox"></div>
+
+      <div class="panel">
+        <div class="panel-hd"><h3 style="font-size:14px">为什么门槛这么高？</h3></div>
+        <div class="panel-bd small" style="line-height:1.8;color:var(--ink-2)">
+          元器件行业最大的痛点不是"找不到货"，而是<b>"不敢信"</b>——翻新片、打磨片、货不对板、收钱不发货。<br><br>
+          所以我们宁可牺牲一部分注册转化率，也要坚持：<b>真企业、真资质、真保证金</b>。<br><br>
+          门槛挡掉的是骗子，留下的是真正能长期做生意的人。这才是平台"公平交易保证"能兑现的前提。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+renderHeader('register.html');
+renderFooter();
+renderDemoNote('注册入驻 · 买卖双入口可切换');
+
+let role = qs('role') === 'seller' ? 'seller' : 'buyer';
+
+const BONDS = [
+  ['¥10,000','≤ 500 SKU · 基础曝光'],
+  ['¥50,000','≤ 5,000 SKU · 搜索加权'],
+  ['¥100,000','≤ 50,000 SKU · 求购优先推送'],
+  ['¥200,000','不限 SKU · 品牌旗舰店 + API 高频']
+];
+
+function setRole(r){
+  role = r;
+  document.getElementById('rBuyer').classList.toggle('on', r==='buyer');
+  document.getElementById('rSeller').classList.toggle('on', r==='seller');
+  document.getElementById('buyerExtra').classList.toggle('hide', r!=='buyer');
+  document.getElementById('sellerExtra').classList.toggle('hide', r!=='seller');
+  document.getElementById('submitBtn').textContent = r==='buyer' ? '提交注册 · 买家永久免费' : '提交入驻申请 · 前 12 个月 0 佣金';
+  document.getElementById('afterHint').textContent = r==='buyer'
+    ? '注册后即可搜索、询价；完成企业认证后可下单与申请账期。'
+    : '入驻通过并缴纳保证金后即可上架库存。前 12 个月免佣金。';
+  drawSteps(); drawBenefit();
+}
+
+function drawSteps(){
+  const s = role==='buyer'
+    ? [['填写账号','手机号 + 密码'],['企业认证','执照 + 法人实名'],['对公验证','小额打款'],['开通采购','即可询价下单']]
+    : [['填写账号','手机号 + 密码'],['企业认证','执照 + 法人实名'],['供货资质','授权书 / 来源凭证'],['缴纳保证金','开通上架权限']];
+  document.getElementById('stepBar').innerHTML = s.map(x=>`<div class="step"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('');
+}
+
+function drawBenefit(){
+  const b = role==='buyer'
+    ? {t:'买家权益', list:[
+        ['✅','注册与使用永久免费，平台不向买家收取任何佣金'],
+        ['🔍','1,286 万条现货实时检索 + BOM 一键配单比价'],
+        ['📢','发布求购单，3,417 家卖家主动报价，平均 22 分钟首次响应'],
+        ['🛡️','平台资金托管，验收合格才放款；假一赔十，最高赔付 50 万'],
+        ['🔬','可加购第三方开封检测（SGS / 华测 CTI / 赛宝）'],
+        ['💳','满足条件可申请 30 / 60 天账期授信，最高 1,000 万'],
+        ['📊','采购数据看板：价格走势、齐套率、供应商绩效']]}
+    : {t:'卖家权益', list:[
+        ['🎁','<b>前 12 个月 0 佣金</b>，成交才收费，不成交零成本'],
+        ['⬆','Excel / ERP API 批量上架，自动清洗型号、匹配参数'],
+        ['💬','实时求购推送，30 秒抢单报价，滞销料精准变现'],
+        ['📊','经营看板：曝光/询价/成交漏斗 + 智能调价建议'],
+        ['💰','确认收货 T+1 结算，可选保理垫资立即到账 98%'],
+        ['🏅','授权代理商专属标识，搜索权重 +40%'],
+        ['🔌','开放 API 对接金蝶 / 用友 / SAP，杜绝超卖']]};
+  document.getElementById('benefitBox').innerHTML =
+    `<div class="panel-hd"><h3 style="font-size:14px">${b.t}</h3></div>
+     <div class="panel-bd col gap12">${b.list.map(x=>
+       `<div class="row gap8" style="align-items:flex-start"><span>${x[0]}</span><span class="small" style="line-height:1.6">${x[1]}</span></div>`).join('')}</div>`;
+}
+
+document.getElementById('bondPick').innerHTML = BONDS.map((b,i)=>
+  `<label class="roletab" style="flex:1;min-width:150px;padding:11px;text-align:center;${i===2?'border-color:var(--brand);background:var(--brand-l)':''}"
+    onclick="document.querySelectorAll('#bondPick label').forEach(l=>{l.style.borderColor='var(--line)';l.style.background='#fff'});this.style.borderColor='var(--brand)';this.style.background='var(--brand-l)'">
+    <b style="font-size:14px">${b[0]}</b><span style="font-size:10.5px">${b[1]}</span></label>`).join('');
+
+function onStype(){
+  const v = document.getElementById('stype').value;
+  document.getElementById('authBox').classList.toggle('hide', v!=='授权代理商' && v!=='原厂直营');
+}
+
+function submitReg(){
+  if(!document.getElementById('agree').checked){ alert('请先同意平台协议'); return; }
+  demoTip(role==='buyer'
+    ? '买家注册已提交！\n\n① 工商核验：通过 ✓\n② 法人实名：请用手机扫码完成\n③ 对公打款：1 个工作日内\n\n认证完成前可先浏览与询价，认证后开通下单权限。'
+    : '卖家入驻申请已提交！\n\n① 工商核验：通过 ✓\n② 授权书复核：1 个工作日\n③ 保证金缴纳：审核通过后线上支付\n\n通过后即可批量上架库存，前 12 个月 0 佣金。');
+}
+
+setRole(role);
+</script>
+</body>
+</html>

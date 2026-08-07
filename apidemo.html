@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>芯汇通 SourcIC · 数据库驱动演示</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<div class="wrap" style="padding:24px 0 40px">
+  <h1 style="font-size:26px;margin-bottom:6px">数据库驱动演示 <span class="tag tag-blue">V1 真实后端</span></h1>
+  <p class="muted" style="margin-bottom:18px">本页数据全部来自后端 <b>SQLite（sql.js）真实数据库</b>，经 REST API 返回，不再是前端写死的 mock。后端同时托管整套原型。</p>
+
+  <div id="stat" class="row gap16 mb16" style="display:flex"></div>
+
+  <div class="panel">
+    <div class="panel-hd"><h3>🔎 实时检索（调用 /api/products）</h3></div>
+    <div class="panel-bd">
+      <div class="row gap8" style="display:flex;flex-wrap:wrap">
+        <input id="kw" placeholder="型号 / 关键词，如 STM32、0603、电阻" style="flex:1;min-width:220px;padding:9px 12px;border:1px solid var(--line);border-radius:8px">
+        <button class="btn btn-accent" onclick="runSearch()">搜索</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('kw').value='';runSearch()">清空</button>
+      </div>
+      <div id="res" class="mt16"></div>
+    </div>
+  </div>
+</div>
+<div id="app-footer"></div>
+<script src="assets/app.js"></script>
+<script>
+renderHeader('apidemo.html'); renderFooter(); renderDemoNote('数据库驱动演示 · 数据来自后端 SQLite');
+const $ = s => document.querySelector(s);
+
+async function loadStat(){
+  try{
+    const h = await (await fetch('/api/health')).json();
+    $('#stat').innerHTML = [
+      ['在库产品', h.products, 'sku'],['认证卖家', h.sellers, '家'],['品牌厂家', h.brands, '个']
+    ].map(([t,n,u])=>`<div class="kpi" style="background:#f4f6f8;border:1px solid var(--line);border-radius:10px;padding:12px 18px"><b style="font-size:22px;color:var(--brand)">${n}</b><span style="display:block;color:var(--muted);font-size:12px">${t}（${u}）</span></div>`).join('');
+  }catch(e){ $('#stat').innerHTML = '<span class="muted">后端未启动（请本地运行 node backend/server.js:3001）</span>'; }
+}
+
+async function runSearch(){
+  const kw = $('#kw').value.trim();
+  const url = '/api/products?pageSize=12' + (kw?('&q='+encodeURIComponent(kw)):'');
+  try{
+    const j = await (await fetch(url)).json();
+    if(!j.items.length){ $('#res').innerHTML = '<p class="muted">未命中，换个关键词试试。</p>'; return; }
+    $('#res').innerHTML = `<p class="small muted mb12">共 ${j.total} 条，展示前 ${j.items.length} 条（来自真实数据库）</p>` +
+      j.items.map(it=>`
+      <div style="border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <b>${it.mpn}</b><span class="tag tag-line">${it.brand_cn||it.brand_code}</span>
+        </div>
+        <div class="small muted" style="margin:4px 0">${it.desc}</div>
+        <div class="small" style="color:var(--ink-2)">库存 <b>${it.qty.toLocaleString()}</b> ${it.packing||''} · MOQ ${it.moq} · ¥${it.price_min} 起 · ${it.seller_name}</div>
+      </div>`).join('');
+  }catch(e){ $('#res').innerHTML = '<p class="muted">请求失败，请确认后端已启动。</p>'; }
+}
+loadStat(); runSearch();
+</script>
+</body>
+</html>

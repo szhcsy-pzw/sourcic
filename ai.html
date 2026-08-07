@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>芯汇通 SourcIC · AI 找料助手</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<div class="wrap" style="padding:24px 0 40px">
+  <h1 style="font-size:26px;margin-bottom:6px">🤖 AI 找料助手 <span class="tag tag-blue">Beta</span></h1>
+  <p class="muted" style="margin-bottom:18px">用自然语言描述你要找的料，例如「要一颗 STM32 MCU、QFP64、工业级」，AI 自动解析并在库存中命中。<b>开箱即用</b>——后端已接入大模型，访客无需配置。后端不可用时自动降级为规则引擎。</p>
+
+  <details class="panel mb16" style="border:1px solid var(--line);border-radius:12px">
+    <summary style="padding:12px 16px;cursor:pointer;font-weight:600">⚙️ 高级设置（可选）</summary>
+    <div class="panel-bd" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <label class="col">后端 API 地址<input id="be_api" placeholder="http://localhost:3001" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px"></label>
+      <label class="col">自备 LLM 接口地址（可选）<input id="ai_ep" placeholder="留空则用后端代理" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px"></label>
+      <label class="col">自备模型名<input id="ai_model" placeholder="deepseek-chat" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px"></label>
+      <label class="col">自备 API Key（仅存本地）<input id="ai_key" type="password" placeholder="sk-..." style="padding:8px 10px;border:1px solid var(--line);border-radius:8px"></label>
+      <p class="small muted" style="grid-column:1/3">默认走后端代理（无需配置）。如后端未启动，可填自备 Key 直连 LLM。支持任意 OpenAI 兼容接口（DeepSeek、通义、智谱等）。Key 不出本机浏览器。</p>
+    </div>
+  </details>
+
+  <div class="panel mb16">
+    <div class="panel-hd"><h3>描述你要找的料</h3></div>
+    <div class="panel-bd">
+      <textarea id="q" rows="3" placeholder="例如：要一颗 STM32 的 MCU、QFP64 封装、工业级温度；或者：找 0603 10K 1% 的电阻，要环保的" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px"></textarea>
+      <div class="row gap8 mt12" style="display:flex;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-accent" onclick="find()">🔍 智能找料</button>
+        <span class="muted small">点击下方示例一键体验 →</span>
+      </div>
+      <div id="status" class="small muted mt12"></div>
+    </div>
+  </div>
+
+  <!-- 找料示例指南 -->
+  <div class="panel mb16">
+    <div class="panel-hd"><h3>💡 怎么描述效果最好？</h3></div>
+    <div class="panel-bd">
+      <p class="small muted mb12" style="line-height:1.7">像跟采购同事说话一样自然就行。说得越具体，AI 解析越准。<b>关键字段</b>：型号 / 品牌厂家 / 器件大类 / 封装规格 / 精度或等级 / 环保要求 / 替代意向。不必全填，有什么说什么。</p>
+
+      <!-- 场景一：精确型号 -->
+      <div style="border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:18px">📋</span>
+          <b>场景一：知道完整型号——直接报型号最准</b>
+        </div>
+        <p class="small muted mb8">手头有完整料号，直接贴进来，AI 精确匹配。</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="ex('STM32F103C8T6')">STM32F103C8T6</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('GRM188R71H104KA93D')">GRM188R71H104KA93D</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('RC0603FR-0710KL')">RC0603FR-0710KL</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('TPS54331DR')">TPS54331DR</button>
+        </div>
+      </div>
+
+      <!-- 场景二：型号片段+参数 -->
+      <div style="border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:18px">🔧</span>
+          <b>场景二：只记得型号片段+关键参数——组合描述</b>
+        </div>
+        <p class="small muted mb8">记得品牌系列名 + 封装 + 用途，AI 帮你模糊匹配。</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="ex('STM32 MCU QFP64 工业级温度')">STM32 MCU · QFP64 · 工业级</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('0603 10K 1% 电阻，要环保 RoHS')">0603 10K 1% 电阻 · RoHS</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('ESP32 模组 WiFi 蓝牙')">ESP32 模组 · WiFi+蓝牙</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('NXP 的 LPC 系列 Cortex-M3')">NXP LPC 系列 · Cortex-M3</button>
+        </div>
+      </div>
+
+      <!-- 场景三：只说用途需求 -->
+      <div style="border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:18px">🎯</span>
+          <b>场景三：不确定型号——按功能用途描述</b>
+        </div>
+        <p class="small muted mb8">不知道具体型号？说出功能、应用场景，AI 帮你定位品类。</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="ex('要一个低功耗蓝牙模组，用于物联网传感器')">低功耗蓝牙模组 · IoT 传感器</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('找一颗降压 DC-DC，输入12V输出3.3V，1A以上')">DC-DC 降压 12V→3.3V ≥1A</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('需要车规级的 MOS管，N沟道，60V')">车规 MOS管 · N沟道 · 60V</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('找一个 I2C 接口的温度传感器，精度0.5度')">I2C 温度传感器 · ±0.5℃</button>
+        </div>
+      </div>
+
+      <!-- 场景四：找国产替代 -->
+      <div style="border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:18px">🇨🇳</span>
+          <b>场景四：找国产替代——指定原型号求 Pin-to-Pin 替代</b>
+        </div>
+        <p class="small muted mb8">供应链安全或降本需求，说"国产替代"触发推荐国产品牌。</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="ex('TI 的运放，帮我找国产替代')">TI 运放 · 国产替代</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('STM32F103 有没有国产替代，Pin-to-Pin 兼容')">STM32F103 · Pin-to-Pin 国产</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('想用国产 MCU 替代 NXP 的 LPC1768')">替代 NXP LPC1768 · 国产 MCU</button>
+        </div>
+      </div>
+
+      <!-- 场景五：批量采购 -->
+      <div style="border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:18px">📦</span>
+          <b>场景五：批量采购——带上数量和交付要求</b>
+        </div>
+        <p class="small muted mb8">报上预估用量和交期要求，方便卖家精准报价。</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="ex('0805 100nF X7R 电容，月用量50万片，要原厂标盘')">0805 100nF · 月用50万 · 标盘</button>
+          <button class="btn btn-ghost btn-sm" onclick="ex('GD32F103RCT6，要5000片，本周内交货')">GD32F103RCT6 · 5000片 · 急交</button>
+        </div>
+      </div>
+
+      <!-- 描述技巧小结 -->
+      <div style="background:var(--bg-2);border-radius:10px;padding:12px 16px;margin-top:14px">
+        <p class="small" style="line-height:1.8;margin:0">
+          <b>📝 描述技巧：</b>
+          ① 有型号就报型号，最准 →
+          ② 没型号就报「品牌 + 品类 + 关键参数」 →
+          ③ 加上封装（如 0603/QFP64/SOT-23）能大幅缩小范围 →
+          ④ 有特殊要求（环保/车规/工业级/国产替代）一定带上 →
+          ⑤ 批量采购加上数量和交期，方便卖家报价
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div id="result"></div>
+</div>
+<div id="app-footer"></div>
+<script src="assets/app.js"></script>
+<script>
+renderHeader('ai.html'); renderFooter(); renderDemoNote('AI 找料助手 · 后端 AI 代理 + 规则引擎双保障');
+
+// ---- 读取设置 ----
+['be_api','ai_ep','ai_model','ai_key'].forEach(id=>{
+  const v = localStorage.getItem(id); if(v) document.getElementById(id).value = v;
+  document.getElementById(id).addEventListener('change', e=> localStorage.setItem(id, e.target.value));
+});
+
+function ex(t){ document.getElementById('q').value = t; find(); }
+
+// ---- 规则引擎（离线兜底） ----
+const BRAND_HINT = {'STM32':'STMicroelectronics','STM':'STMicroelectronics','ST':'STMicroelectronics','TI':'Texas Instruments','德州仪器':'Texas Instruments','ESP':'Espressif','乐鑫':'Espressif','GD':'GigaDevice','兆易':'GigaDevice','NXP':'NXP','英飞凌':'Infineon','INFINEON':'Infineon','TDK':'TDK','国巨':'YAGEO'};
+const CAT_HINT = {'电阻':'被动元件','电容':'被动元件','电感':'被动元件','MCU':'集成电路 IC','单片机':'集成电路 IC','微控制器':'集成电路 IC','FPGA':'集成电路 IC','存储器':'集成电路 IC','运放':'集成电路 IC','放大器':'集成电路 IC','LED':'光电器件','灯':'光电器件','光耦':'光电器件','连接器':'连接器','端子':'连接器','传感器':'传感器','晶振':'晶体与振荡器','振荡器':'晶体与振荡器','MOS':'分立半导体','二极管':'分立半导体','三极管':'分立半导体','电源':'电源管理','模组':'射频/无线','WiFi':'射频/无线','蓝牙':'射频/无线'};
+
+function ruleParse(t){
+  const f = {mpn:'',brand:'',cat:'',pkg:'',rohs:null,alt:false,note:[]};
+  const pkgM = t.match(/\b(0603|0402|0805|1206|QFP\d+|QFN\d+|SOT\d+|BGA\d+|SOP\d+|DFN\d+)\b/i);
+  if(pkgM) f.pkg = pkgM[1].toUpperCase();
+  for(const [k,v] of Object.entries(BRAND_HINT)) if(t.toUpperCase().includes(k.toUpperCase())) f.brand = v;
+  if(!f.brand) for(const [code,b] of Object.entries(BRANDS)){ if(t.includes(b.cn) || (b.en && t.toLowerCase().includes(b.en.toLowerCase()))){ f.brand = code; break; } }
+  for(const [k,v] of Object.entries(CAT_HINT)) if(t.includes(k)){ f.cat = v; break; }
+  const mpnM = t.match(/\b([A-Za-z][A-Za-z0-9]{3,}[0-9][A-Za-z0-9]*)\b/);
+  if(mpnM) f.mpn = mpnM[1].toUpperCase();
+  if(t.includes('环保')||t.includes('RoHS')||t.includes('rohs')) f.rohs = 1;
+  if(t.includes('国产替代')||t.includes('替代')||t.includes('国产')) f.alt = true;
+  return f;
+}
+
+function applyFilters(f){
+  let list = PRODUCTS.slice();
+  if(f.mpn) list = list.filter(p=>(p.mpn||'').toUpperCase().includes(f.mpn));
+  if(f.brand) list = list.filter(p=>(p.brand||'')===f.brand);
+  if(f.cat) list = list.filter(p=>(p.cat||'')===f.cat);
+  if(f.pkg) list = list.filter(p=>(p.pkg||'').toUpperCase().includes(f.pkg)||(p.desc||'').toUpperCase().includes(f.pkg));
+  if(f.rohs===1) list = list.filter(p=>p.rohs);
+  return list;
+}
+
+// ---- 后端 AI 代理（首选：无需访客配置 Key） ----
+async function backendAI(text){
+  const base = localStorage.getItem('be_api') || ''; // 空则同源
+  const url = (base || '') + '/api/ai/search';
+  try{
+    const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({text})});
+    if(!r.ok) return null;
+    const j = await r.json();
+    if(j.error) return null;
+    return j; // {mode, filters, advice, items}
+  }catch(e){ return null; }
+}
+
+// ---- 自备 Key 直连 LLM（降级方案） ----
+async function directLLM(text){
+  const ep = localStorage.getItem('ai_ep'); if(!ep) return null;
+  const key = localStorage.getItem('ai_key'); const model = localStorage.getItem('ai_model') || 'deepseek-chat';
+  if(!key) return null;
+  const sys = '你是电子元器件采购助手。把用户自然语言找料需求解析为 JSON：{mpn:型号片段或空字符串, brand:原厂英文名或空, cat:中文大类或空, pkg:封装或空, rohs:1或0或-1(未知), alt:true或false, advice:简短中文采购建议}。只输出 JSON，不要解释。';
+  try{
+    const r = await fetch(ep, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key}, body: JSON.stringify({model, messages:[{role:'system',content:sys},{role:'user',content:text}], temperature:0.1})});
+    const j = await r.json();
+    let txt = (j.choices&&j.choices[0]&&j.choices[0].message.content) || '{}';
+    txt = txt.replace(/```json|```/g,'').trim();
+    return JSON.parse(txt);
+  }catch(e){ return null; }
+}
+
+function chip(label, val){ return val? `<span class="tag tag-line" style="margin:2px">${label}: ${val}</span>`:''; }
+
+function renderResult(mode, f, list, advice){
+  const modeLabel = {llm:'AI 大模型', rule:'规则引擎', rule_fallback:'规则引擎（AI 降级）', direct_llm:'自备 Key · LLM'}[mode] || mode;
+  let head = `<div class="mb12">解析方式：<b>${modeLabel}</b>　${chip('型号',f.mpn)}${chip('品牌',f.brand||f.brand_code?BRANDS[f.brand||f.brand_code]?.cn||f.brand||f.brand_code:'')}${chip('大类',f.cat)}${chip('封装',f.pkg)}${f.rohs===1?chip('环保','RoHS'):''}${f.alt?'<span class="tag tag-line">国产替代意向</span>':''}</div>`;
+  if(advice) head += `<div style="background:var(--bg-2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:13px;line-height:1.6">💬 ${advice}</div>`;
+  let headAdd = '';
+  if(f.alt){
+    const dom = Object.entries(BRANDS).filter(([c,b])=>/兆易|乐鑫|华润|士兰|紫光|国民|芯|中微/.test(b.cn)).map(([c,b])=>b.cn);
+    if(dom.length) headAdd = `<div class="small muted mb12">国产替代可关注品牌：${dom.join('、')}</div>`;
+  }
+  if(!list || !list.length){ document.getElementById('result').innerHTML = head + headAdd + '<p class="muted">未命中库存，试试更宽泛的描述，或在卖家中心发布求购。</p>'; return; }
+  const cards = list.slice(0,12).map(p=>{
+    // 统一前端 PRODUCTS 和后端 API 两种数据结构
+    const pid       = p.id || '';
+    const brandCn   = p.brand_cn || (p.brand_code && BRANDS[p.brand_code] ? BRANDS[p.brand_code].cn : '') || (p.brand && BRANDS[p.brand] ? BRANDS[p.brand].cn : '') || p.brand || '';
+    const sellerId  = p.seller || p.seller_id || '';
+    const sellerNm  = p.seller_name || (sellerId && SELLERS[sellerId] ? SELLERS[sellerId].name : '') || '';
+    const catNm     = p.cat || p.cat_id || '';
+    const priceStr  = p.price_min ? '¥'+Number(p.price_min).toFixed(4) : (p.tiers && p.tiers[0] ? '¥'+p.tiers[0].p.toFixed(4) : '');
+    const dateCode  = p.dateCode || p.date_code || '';
+    const packing   = p.packing || '';
+    const rohs      = p.rohs;
+    return `<div style="border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;transition:box-shadow .15s" onmouseover="this.style.boxShadow='0 2px 12px rgba(0,0,0,.08)'" onmouseout="this.style.boxShadow='none'">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <a href="product.html?id=${pid}" style="font-size:15px;font-weight:700;color:var(--brand);text-decoration:none">${p.mpn}</a>
+          ${rohs?'<span class="tag tag-ok" style="margin-left:6px">RoHS</span>':''}
+        </div>
+        <span class="tag tag-line">${brandCn}</span>
+      </div>
+      <div class="small muted" style="margin:4px 0 6px">${p.desc||''}</div>
+      <div class="small" style="color:var(--ink-2);line-height:1.7">
+        ${catNm?catNm+' · ':''}${p.pkg||''} · 库存 <b style="color:var(--ok)">${(p.qty||0).toLocaleString()}</b> pcs · MOQ ${(p.moq||0).toLocaleString()}
+        ${priceStr?' · 起价 <b style="color:var(--red)">'+priceStr+'</b>':''}
+        ${dateCode?' · 批次 '+dateCode:''}
+        ${packing?' · '+packing:''}
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;border-top:1px dashed var(--line-2);padding-top:8px">
+        <span class="small muted">
+          卖家：<a href="search.html?seller=${sellerId}" style="color:var(--brand);font-weight:600">${sellerNm}</a>
+          ${sellerId && SELLERS[sellerId] ? '<span class="tiny muted"> · '+SELLERS[sellerId].type+' · ⭐'+SELLERS[sellerId].rating+'</span>':''}
+        </span>
+        <div style="display:flex;gap:8px">
+          <a href="search.html?seller=${sellerId}" class="btn btn-ghost btn-sm">📦 同卖家库存</a>
+          <a href="product.html?id=${pid}" class="btn btn-primary btn-sm">查看详情 →</a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('result').innerHTML = head + headAdd +
+    `<p class="small muted mb12">命中 <b>${list.length}</b> 条库存，展示前 ${Math.min(12,list.length)} 条 · 点击型号或「查看详情」进入产品页，点击卖家名查看该卖家全部库存</p>` + cards;
+}
+
+async function find(){
+  const text = document.getElementById('q').value.trim(); if(!text){ alert('请输入找料描述'); return; }
+  const statusEl = document.getElementById('status');
+  statusEl.textContent = '🔍 AI 分析中…';
+
+  // 1) 优先走后端 AI 代理
+  const be = await backendAI(text);
+  if(be){
+    statusEl.textContent = '';
+    // 后端返回的 items 是数据库结果，前端用前端数据做渲染兜底
+    let list = be.items;
+    if(!list || !list.length){
+      // 后端没查到，用前端 PRODUCTS 兜底
+      const f = {mpn:be.filters.mpn||'',brand:be.filters.brand_code||'',cat:be.filters.cat||'',pkg:be.filters.pkg||'',rohs:be.filters.rohs,alt:be.filters.alt};
+      list = applyFilters(f);
+    }
+    renderResult(be.mode, be.filters, list, be.advice);
+    return;
+  }
+
+  // 2) 降级：自备 Key 直连 LLM
+  const dl = await directLLM(text);
+  if(dl){
+    statusEl.textContent = '';
+    const f = {mpn:dl.mpn||'',brand:dl.brand||'',cat:dl.cat||'',pkg:dl.pkg||'',rohs:dl.rohs,alt:dl.alt};
+    const list = applyFilters(f);
+    renderResult('direct_llm', f, list, dl.advice);
+    return;
+  }
+
+  // 3) 最终兜底：规则引擎
+  statusEl.textContent = '';
+  const f = ruleParse(text);
+  const list = applyFilters(f);
+  renderResult('rule', f, list, '');
+}
+</script>
+</body>
+</html>

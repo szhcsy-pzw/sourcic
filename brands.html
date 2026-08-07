@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>品牌厂家 · 芯汇通 SourcIC</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+
+<div class="wrap">
+  <div class="crumb"><a href="index.html">首页</a> › <span>品牌厂家</span></div>
+
+  <div class="alert alert-info mb16">
+    💡 每个品牌均关联<b>原厂官网直达链接</b>与在售库存统计。买家可直接跳转原厂查 Datasheet、生命周期状态（Active / NRND / EOL）与授权代理名录，
+    避免"卖家说是原装、买家无从验证"的信息不对称。
+  </div>
+
+  <div class="filters mb16">
+    <div class="frow"><div class="fk">产地区域</div><div class="fv" id="fOrigin"></div></div>
+    <div class="frow"><div class="fk">首字母</div><div class="fv" id="fAlpha"></div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px" id="brandGrid"></div>
+
+  <div class="panel mt32">
+    <div class="panel-hd"><h3>品牌授权与真伪核验说明</h3></div>
+    <div class="panel-bd">
+      <table class="spec-table">
+        <tr><th>授权代理商标识</th><td>卖家上传原厂授权书，平台向原厂中国区或其一级代理进行<b>抽样复核</b>，通过后展示 <span class="tag tag-ok">授权代理商</span> 标识</td></tr>
+        <tr><th>独立贸易商</th><td>非原厂授权，货源来自市场流通。平台要求上传<b>上游采购 Invoice</b> 作为来源凭证（内部存档，买家下单后可申请查看）</td></tr>
+        <tr><th>工厂呆料</th><td>整机厂/EMS 项目结余料，需提供<b>原采购合同或入库单</b>。此类库存价格优势明显，但批次通常较早</td></tr>
+        <tr><th>原厂直营</th><td>国产原厂在平台开设官方店，直接销售自有型号，批次最新、可开原厂发票</td></tr>
+        <tr><th>如何自行核验</th><td>① 点击品牌卡片跳转原厂官网查询型号状态<br>② 向卖家索要 COC（原厂符合性证书）<br>③ 大额订单加购第三方 X-Ray 检测</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+renderHeader('brands.html');
+renderFooter();
+renderDemoNote('品牌厂家目录 · 卡片可跳转原厂官网');
+
+let fo = '', fa = '';
+const origins = [...new Set(Object.values(BRANDS).map(b=>b.origin))];
+const alphas = [...new Set(Object.keys(BRANDS).map(b=>b[0].toUpperCase()))].sort();
+
+function draw(){
+  document.getElementById('fOrigin').innerHTML =
+    `<a href="javascript:;" class="${fo===''?'on':''}" onclick="fo='';draw()">全部</a>` +
+    origins.map(o=>`<a href="javascript:;" class="${fo===o?'on':''}" onclick="fo='${o}';draw()">${o}</a>`).join('');
+  document.getElementById('fAlpha').innerHTML =
+    `<a href="javascript:;" class="${fa===''?'on':''}" onclick="fa='';draw()">全部</a>` +
+    alphas.map(a=>`<a href="javascript:;" class="${fa===a?'on':''}" onclick="fa='${a}';draw()">${a}</a>`).join('');
+
+  const list = Object.entries(BRANDS).filter(([k,v])=>
+    (!fo || v.origin===fo) && (!fa || k[0].toUpperCase()===fa));
+
+  document.getElementById('brandGrid').innerHTML = list.map(([k,v])=>{
+    const cnt = PRODUCTS.filter(p=>p.brand===k).length;
+    const qty = PRODUCTS.filter(p=>p.brand===k).reduce((s,p)=>s+p.qty,0);
+    return `<div class="panel" style="padding:16px">
+      <div class="row between center mb12">
+        <div style="width:46px;height:46px;border-radius:8px;background:var(--brand-l);color:var(--brand);
+          display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px">${k.slice(0,2).toUpperCase()}</div>
+        <span class="tag tag-gray">${v.origin}</span>
+      </div>
+      <div class="bold" style="font-size:14.5px">${v.cn}</div>
+      <div class="tiny muted" style="min-height:16px">${k}</div>
+      <div class="metric mt12">
+        <div style="grid-column:span 2"><strong>${cnt ? fmt.qty(qty) : '—'}</strong><span>在售库存 pcs</span></div>
+        <div><strong>${cnt || '—'}</strong><span>SKU</span></div>
+      </div>
+      <div class="row gap8 mt12">
+        <a href="search.html?kw=${encodeURIComponent(k)}" class="btn btn-primary btn-sm grow">查库存</a>
+        <a href="${v.url}" target="_blank" class="btn btn-ghost btn-sm grow">原厂官网 ↗</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+draw();
+</script>
+</body>
+</html>

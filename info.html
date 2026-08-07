@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>说明中心 · 芯汇通 SourcIC</title>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main class="info-wrap">
+    <aside class="info-nav" id="infoNav"></aside>
+    <section class="info-main">
+      <div id="infoMain"></div>
+      <div class="info-proto">原型演示内容 · 以下条款为示意文案，正式上线前将由法务定稿</div>
+    </section>
+  </main>
+  <div id="app-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+  const TOPICS = {
+    about: {
+      title: '关于我们',
+      lead: '在电子产业的庞大体系里，每一颗器件都连着一条漫长的供应链——从晶圆厂的流片、授权代理的分销，到工厂产线的流转，最终总会沉淀下尾货、呆料与长尾需求。它们本是实打实的价值，却因信息分散、信任难建而长期沉睡。芯汇通 SourcIC 要做的事其实很简单：让对的人，遇见对的料。',
+      blocks: [
+        { h: '我们是谁', p: '芯汇通 SourcIC（sourcic.cn）是一个垂直于电子元器件行业的库存撮合与交易平台。我们把分散在授权代理商、独立贸易商、原厂与工厂手中的库存，转化为结构化、可检索、可信赖的在线供给，让全球买家得以高效找到所需器件，让沉睡的库存重新流动为现金。' },
+        { h: '名字里的初心', p: '「汇」，是汇聚——把散落行业各处的社会库存聚于一处；「通」，是流通——让物料、信息与信任在买卖两端顺畅奔流。看似简单的两个字，道尽了我们存在的意义：汇万物之料，通天下之需。' },
+        { h: '我们为何出发', ul: [
+          '找料之难：紧缺料、停产料、小批量长尾需求，往往分散在全球大大小小的授权分销商、独立贸易商与工厂的表格和系统里，缺乏统一入口，采购只能逐家询价、效率低下。',
+          '信任之困：翻新料、打磨料、虚报库存屡见不鲜，采购者如履薄冰，一笔失误可能拖垮整条产线。',
+          '交易之险：线下先款后货、口头约定，跳单与货不对板时有发生，事后维权成本高昂。',
+          '数据孤岛：库存动态无法实时同步，买卖双方都在为信息差持续买单，撮合效率极低。'
+        ] },
+        { h: '我们解决什么', ul: [
+          '一站式找料：参数级检索加 AI 找料，把「我要一颗 STM32、QFP64、工业级」变成秒级命中。',
+          '信任基建：企业实名认证、保证金、资金银行存管、第三方检测、全链路留痕——五道锁守住交易安全。',
+          '交易闭环：站内 IM 沟通、联系方式脱敏防跳单、担保下单、争议仲裁，让每一笔成交有始有终。',
+          '数据资产：每一笔询价、订单与评价都在沉淀，成为平台与用户共同构筑的护城河。'
+        ] },
+        { h: '我们的模式', p: '我们不囤货、不自营，是轻资产的「连接器」。供给侧（卖家）上传真实可售库存，需求侧（买家）发布需求或检索现货，平台居中提供撮合、信用与履约保障。这意味着更低的运营风险、更快的供给扩张，也让我们能把全部精力聚焦于「信任」这一核心价值持续迭代。' },
+        { h: '我们的差异化', ul: [
+          '博采众长：国际领先的参数化检索体系、极致的现货电商体验、本土现货流通的供给体量，取其精华而非简单复制。',
+          '中文语境优先：型号、参数、标盘（pcs/reel）、年份（Date Code）、最小起订量、原厂官网链接，完全贴合国内采购习惯。',
+          '公平优先：资金走银行存管，平台不碰资金池；争议依规则与第三方检测裁定，不偏袒任何一方。'
+        ] },
+        { h: '我们的承诺', ul: [
+          '真实：库存真实可售，卖家实名可追溯，从源头杜绝虚假供给。',
+          '安全：资金存管、信息脱敏、数据依《个人信息保护法》合规留存。',
+          '长期：我们不止做一笔生意，更做一件可被整个行业托付的基础设施。'
+        ] },
+        { h: '我们的未来：AI 驱动', p: '我们相信，AI 不会让「建站」变稀缺，却会让「数据＋信任」更值钱。芯汇通正把找料助手、国产替代推荐、BOM 智能配单、智能验真与供需预测逐步落地——用 AI 把行业老师傅的经验与判断，沉淀为人人可用的能力，让新人也能像行家一样找料、避坑、决策。' },
+        { h: '联系我们', ul: [
+          '商务合作：bd@sourcic.cn',
+          '合作对接：partner@sourcic.cn',
+          '客服热线：400-000-0000（原型占位）',
+          '总部：中国·深圳',
+          'ICP 备案号：粤ICP备00000000号（原型占位）'
+        ] }
+      ]
+    },
+    partner: {
+      title: '商务合作',
+      blocks: [
+        { h: '合作方向', ul: ['品牌原厂 / 授权代理：共建授权库存专区', '检测机构：第三方验真、可靠性试验联合服务', '物流仓储：入仓质检、代发履约', '行业协会 / 媒体：联合活动与内容', '投资机构：战略与财务融资对接'] },
+        { h: '如何对接', p: '请发送合作意向至 partner@sourcic.cn，注明合作类型、机构名称与联系人，我们将在 3 个工作日内回复。' }
+      ]
+    },
+    career: {
+      title: '加入我们',
+      blocks: [
+        { h: '我们在找', ul: ['后端工程师（Node / PostgreSQL / 搜索引擎）', '前端工程师（React / 可视化）', '供应链运营（元器件行业背景优先）', '商务拓展 BD（电子元器件渠道资源）', '风控与质检专家'] },
+        { h: '投递方式', p: '简历请发送至 hr@sourcic.cn，标题格式「岗位-姓名」。芯汇通处于快速成长期，提供股权与广阔成长空间。' }
+      ]
+    },
+    privacy: {
+      title: '隐私政策',
+      blocks: [
+        { h: '我们收集的信息', ul: ['注册信息：企业名称、统一社会信用代码、联系人（用于实名与企业认证）', '交易信息：询价、订单、支付与物流留痕（用于担保与争议处理）', '沟通信息：站内 IM 记录（依合规要求留存）', '设备与日志：访问 IP、浏览器、操作日志'] },
+        { h: '信息使用', p: '仅用于提供与改进平台服务、风控核验、争议处理与法律合规。我们不会向无关第三方出售你的信息。' },
+        { h: '信息保护', ul: ['敏感信息加密存储与传输（TLS）', '联系方式默认脱敏，仅授权后按留痕规则解锁', 'IM 与交易数据按《个人信息保护法》留存期限管理', '两地三中心备份，防止数据丢失'] },
+        { h: '你的权利', p: '你有权查询、更正、删除自己的信息，或撤回授权。可联系 privacy@sourcic.cn 行使权利。' }
+      ]
+    },
+    agreement: {
+      title: '用户协议',
+      blocks: [
+        { h: '账号与认证', p: '使用担保交易与资金托管功能需完成企业实名认证。账号仅限本人/本企业使用，不得转借或买卖。' },
+        { h: '交易规则', ul: ['优先使用站内 IM 沟通，线下成交不受平台担保保护', '发布库存须真实、可售，禁止虚假库存与刷量', '担保订单资金由银行存管，确认收货后释放给卖家', '争议依平台判责规则处理，必要时引入第三方检测'] },
+        { h: '禁止行为', ul: ['跳单（引导线下规避平台交易）', '销售翻新/打磨/假冒器件', '发布违禁品或侵犯他人知识产权', '利用平台从事欺诈或洗钱'] },
+        { h: '责任与争议', p: '平台提供信息撮合与交易保障工具，具体交易风险由买卖双方依约定承担。争议无法协商时，可提交平台仲裁或依法维权。' }
+      ]
+    },
+    help: {
+      title: '帮助中心',
+      blocks: [
+        { h: '注册与入驻', p: '首页点击「免费注册」，选择买家或卖家角色，提交企业资料完成认证即可使用。卖家需上传授权书或缴纳保证金以提升权重。' },
+        { h: '如何找料', ul: ['首页搜索框输入型号（如 STM32F103C8T6）', '通过「现货搜索」多维筛选分类/品牌/封装/年份', '发布求购（RFQ），等待卖家报价', '使用「AI 找料」用一句话描述需求自动匹配'] },
+        { h: '如何下单', p: '在商品详情页点击「担保下单」，资金进入银行存管，确认收货后释放给卖家；也可先「站内议价」再成交。' },
+        { h: '常见问题', ul: ['联系方式为何隐藏？——防跳单、保交易安全，可消耗额度解锁并留痕', '发票怎么开？——见「发票与账期」', '货物有问题？——发起争议，平台介入判责'] }
+      ]
+    },
+    invoice: {
+      title: '发票与账期',
+      blocks: [
+        { h: '发票类型', ul: ['增值税普通发票', '增值税专用发票（需提供开票资料）', '电子发票（优先，开票更快）'] },
+        { h: '开票流程', p: '订单完成并确认收货后，在「买家中心-支付与授信」提交开票申请，平台或卖家在 5 个工作日内开具。' },
+        { h: '账期与授信', p: '认证企业可申请采购授信额度，享受月结账期；额度由平台依交易信用评估。原型中五种支付方式（企业网银/承兑汇票/银行存管/授信赊销/供应链金融）均可体验。' }
+      ]
+    },
+    logistics: {
+      title: '物流与验收',
+      blocks: [
+        { h: '发货', ul: ['卖家在约定时效内发货（页面标注 lead time）', '高价值器件建议入仓质检后代发', '支持顺丰、德邦及第三方保税仓'] },
+        { h: '验收', ul: ['买家收货后按约定验收期确认', '外观/数量异常请于验收期内发起争议', '确认收货后存管资金释放给卖家'] },
+        { h: '拒收与退货', p: '非质量问题的退货依买卖双方约定；质量争议由平台依判责规则或第三方检测裁定。' }
+      ]
+    },
+    penalty: {
+      title: '违规处罚规则',
+      blocks: [
+        { h: '违规类型', ul: ['跳单：引导或接受线下规避平台交易', '售假：销售翻新/打磨/假冒/侵权器件', '虚假库存：发布不可售或刷量库存', '欺诈：虚假报价、骗取货款'] },
+        { h: '处罚梯度', ul: ['轻微：警告 + 扣分 + 降权', '一般：限制功能 + 公示 + 冻结保证金部分', '严重：清退 + 没收保证金 + 列入黑名单 + 依法移交'] },
+        { h: '申诉', p: '被处罚方可提交申诉与证据，平台在 5 个工作日内复核；涉及检测的结论以第三方报告为准。' }
+      ]
+    },
+    promotion: {
+      title: '推广与排名',
+      blocks: [
+        { h: '基础展示', p: '完成入驻与认证的卖家库存默认进入搜索与推荐，按相关性、信用、库存充足度综合排序。' },
+        { h: '排序规则', ul: ['认证卖家优先', '信用评分高者优先', '库存充足、响应快者优先', '历史成交好者优先'] },
+        { h: '付费推广（规划中）', p: '后续将开放关键词置顶、专区冠名、认证标识等增值推广，规则透明、明码标价，不干扰公平排序基础逻辑。' }
+      ]
+    },
+    api: {
+      title: '开放 API / ERP 对接',
+      blocks: [
+        { h: '对接能力', ul: ['库存同步：批量上传 / 实时库存变更', '订单对接：询价、下单、状态回写', '物流回传：发货、运单、签收', '数据报表：销售、滞销、价格走势'] },
+        { h: '对接流程', ul: ['申请 API 密钥（卖家中心-开放 API）', '下载接口文档与 SDK', '沙箱联调', '正式上线，库存实时同步'] },
+        { h: '文档', p: '完整接口文档将于 V1 上线后在「卖家中心-ERP API 对接」中提供（当前为原型占位）。' }
+      ]
+    },
+    sellers: {
+      title: '认证卖家名录',
+      blocks: [],
+      sellers: true
+    }
+  };
+
+  const NAV = [
+    ['about', '关于我们'], ['partner', '商务合作'], ['career', '加入我们'],
+    ['privacy', '隐私政策'], ['agreement', '用户协议'], ['help', '帮助中心'],
+    ['invoice', '发票与账期'], ['logistics', '物流与验收'], ['penalty', '违规处罚规则'],
+    ['promotion', '推广与排名'], ['api', '开放 API'], ['sellers', '认证卖家名录']
+  ];
+
+  function sellerCards() {
+    if (typeof SELLERS === 'undefined') return '<p class="muted">卖家数据加载中…</p>';
+    return Object.entries(SELLERS).map(([id, s]) => {
+      const cnt = (typeof PRODUCTS !== 'undefined') ? PRODUCTS.filter(p => p.seller === id).length : 0;
+      return `<div class="scard">
+        <div class="scard-h"><span class="scard-name">${s.name}</span><span class="tag tag-org">${s.type}</span></div>
+        <div class="scard-meta">${s.city} · 从业 ${s.years} 年 · 评分 ${s.rating} · 成交 ${s.deals}</div>
+        <div class="scard-meta">在售库存 ${cnt} 项 · 响应 ${s.resp} 分钟 · 发货 ${s.lead}</div>
+        <div class="scard-bot"><span>保证金 ${s.bond}</span><a class="btn btn-ghost sm" href="search.html?kw=${encodeURIComponent(s.name)}">查看库存 →</a></div>
+      </div>`;
+    }).join('');
+  }
+
+  function render(key) {
+    if (!TOPICS[key]) key = 'about';
+    // nav
+    document.getElementById('infoNav').innerHTML = NAV.map(([k, label]) =>
+      `<a href="info.html?t=${k}" class="${k === key ? 'on' : ''}">${label}</a>`).join('');
+    const t = TOPICS[key];
+    let body = '';
+    if (t.sellers) {
+      body = `<div class="scard-grid">${sellerCards()}</div>`;
+    } else {
+      body = t.blocks.map(b => {
+        let inner = b.p ? `<p>${b.p}</p>` : '';
+        if (b.ul) inner += `<ul>${b.ul.map(x => `<li>${x}</li>`).join('')}</ul>`;
+        return `<div class="info-block"><h3>${b.h}</h3>${inner}</div>`;
+      }).join('');
+    }
+    document.getElementById('infoMain').innerHTML =
+      `<h1 class="info-h1">${t.title}</h1>${t.lead ? `<p class="info-lead">${t.lead}</p>` : ''}${body}`;
+    document.title = t.title + ' · 芯汇通 SourcIC';
+    window.scrollTo(0, 0);
+  }
+
+  (function init() {
+    renderHeader('info.html');
+    renderFooter();
+    renderDemoNote('说明中心 · 条款为示意文案');
+    const t = new URLSearchParams(location.search).get('t') || 'about';
+    render(t);
+    document.getElementById('infoNav').addEventListener('click', e => {
+      const a = e.target.closest('a'); if (!a) return;
+      e.preventDefault();
+      const k = new URLSearchParams(a.search).get('t');
+      history.pushState({}, '', a.href);
+      render(k);
+    });
+  })();
+  </script>
+</body>
+</html>

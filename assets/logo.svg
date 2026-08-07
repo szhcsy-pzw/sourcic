@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 56" fill="none" font-family="'PingFang SC','Microsoft YaHei',sans-serif">
+  <!-- Mark -->
+  <rect x="4" y="8" width="40" height="40" rx="10" fill="#1352A2"/>
+  <g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round">
+    <rect x="13" y="17" width="22" height="22" rx="4"/>
+    <path d="M18 17V13M23 17V13M28 17V13M18 39V43M23 39V43M28 39V43M13 22H9M13 27H9M13 32H9M39 22H43M39 27H43M39 32H43"/>
+    <path d="M13 17L23 27M39 17L23 27M13 39L23 27M39 39L23 27" stroke-width="1.2"/>
+  </g>
+  <circle cx="23" cy="27" r="3.6" fill="#FF6B00"/>
+  <!-- Wordmark -->
+  <text x="56" y="31" font-size="21" font-weight="800" fill="#0E2D5C">芯汇通</text>
+  <text x="56" y="47" font-size="12" font-weight="700" fill="#FF6B00" letter-spacing="3">SOURCIC</text>
+</svg>

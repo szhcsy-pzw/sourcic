@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 300" fill="none">
+  <!-- world ring hint (global sourcing) -->
+  <circle cx="190" cy="150" r="118" stroke="#ffffff" stroke-opacity="0.16" stroke-width="1.5"/>
+  <ellipse cx="190" cy="150" rx="118" ry="46" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1.2"/>
+  <ellipse cx="190" cy="150" rx="46" ry="118" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1.2"/>
+  <line x1="72" y1="150" x2="308" y2="150" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1.2"/>
+
+  <!-- supply lines converging to hub -->
+  <g stroke="#ffffff" stroke-opacity="0.4" stroke-width="1.6" fill="none" stroke-linecap="round">
+    <path d="M190 150 C 130 80, 80 95, 58 132"/>
+    <path d="M190 150 C 110 110, 60 130, 48 168"/>
+    <path d="M190 150 C 140 215, 95 222, 70 244"/>
+    <path d="M190 150 C 210 70, 250 70, 286 96"/>
+    <path d="M190 150 C 250 120, 300 130, 322 158"/>
+    <path d="M190 150 C 220 220, 270 225, 300 210"/>
+  </g>
+
+  <!-- supplier nodes -->
+  <g fill="#ffffff" fill-opacity="0.92">
+    <circle cx="58" cy="132" r="7"/>
+    <circle cx="48" cy="168" r="6"/>
+    <circle cx="70" cy="244" r="7"/>
+    <circle cx="286" cy="96" r="7"/>
+    <circle cx="322" cy="158" r="6"/>
+    <circle cx="300" cy="210" r="7"/>
+  </g>
+  <g fill="#FF6B00" fill-opacity="0.9">
+    <circle cx="58" cy="132" r="2.4"/>
+    <circle cx="322" cy="158" r="2.4"/>
+    <circle cx="300" cy="210" r="2.4"/>
+  </g>
+
+  <!-- central IC / hub chip -->
+  <rect x="150" y="110" width="80" height="80" rx="16" fill="#1352A2" fill-opacity="0.55" stroke="#ffffff" stroke-width="2.5"/>
+  <g stroke="#ffffff" stroke-width="2" stroke-linecap="round">
+    <path d="M170 110V100M190 110V100M210 110V100M170 190V200M190 190V200M210 190V200M150 130H140M150 150H140M150 170H140M230 130H240M230 150H240M230 170H240"/>
+  </g>
+  <g stroke="#ffffff" stroke-opacity="0.85" stroke-width="1.4" fill="none">
+    <path d="M150 110L190 150M230 110L190 150M150 190L190 150M230 190L190 150"/>
+  </g>
+  <circle cx="190" cy="150" r="9" fill="#FF6B00"/>
+  <circle cx="190" cy="150" r="14" stroke="#FF6B00" stroke-opacity="0.5" stroke-width="1.5" fill="none"/>
+</svg>
